@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/components/Map.tsx"],"sourcesContent":["\"use client\";\n\nimport Map from \"react-map-gl/maplibre\";\nimport \"maplibre-gl/dist/maplibre-gl.css\";\n\nconst Map = () => {\n  return (\n    <div className=\"h-screen w-screen\">\n      <Map\n        initialViewState={{\n          longitude: -73.9822,\n          latitude: 40.7685,\n          zoom: 14,\n        }}\n        style={{ width: \"100%\", height: \"100%\" }}\n        mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`}\n      />\n    </div>\n  );\n};\n\nexport default Map;\n"],"names":[],"mappings":";;;;AAe0E;AAf1E;;;AAKA,MAAM,MAAM;IACV,qBACE,6LAAC;QAAI,WAAU;kBACb,cAAA,6LAAC;YACC,kBAAkB;gBAChB,WAAW,CAAC;gBACZ,UAAU;gBACV,MAAM;YACR;YACA,OAAO;gBAAE,OAAO;gBAAQ,QAAQ;YAAO;YACvC,UAAU,CAAC,qDAAqD,4DAAwC;;;;;;;;;;;AAIhH;KAdM;uCAgBS"}},
+    {"offset": {"line": 47, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

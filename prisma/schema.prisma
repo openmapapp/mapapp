@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamp(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamp(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @db.Timestamp(6)
+  updatedAt             DateTime  @db.Timestamp(6)
+  user                  user      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamp(6)
+  token     String   @unique
+  createdAt DateTime @db.Timestamp(6)
+  updatedAt DateTime @db.Timestamp(6)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  createdAt     DateTime  @db.Timestamp(6)
+  updatedAt     DateTime  @db.Timestamp(6)
+  username      String?   @unique
+  trust         Int       @default(1)
+  account       account[]
+  session       session[]
+  report        Report[]
+  vote          Vote[]
+}
+
+model verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamp(6)
+  createdAt  DateTime? @db.Timestamp(6)
+  updatedAt  DateTime? @db.Timestamp(6)
+}
+
+model Report {
+  id            Int        @id @default(autoincrement())
+  reportType    ReportType @relation(fields: [reportTypeId], references: [id])
+  reportTypeId  Int
+  lat           Float // Latitude coordinate
+  long          Float // Longitude coordinate
+  description   Json? // Optional: extra details or description, ex. "Police are blocking the road", license plates, etc.
+  //status     String?  @default("pending") // Enable this if you want to create an approval pipeline. Ex. Status of the report: "pending", "approved", "rejected"
+  image         String? // Optional: URL to an image
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime?  @updatedAt
+  departedAt    DateTime? // Optional: time the entry left
+  trustScore    Int //Set at creation of the report and tied to the user's trust score 
+  // Who submitted the report
+  submittedBy   user       @relation(fields: [submittedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  submittedById String
+  // Votes on this report
+  votes         Vote[]
+}
+
+model ReportType {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  fields    Json // fields available for this report type
+  reports   Report[]
+}
+
+model Vote {
+  id         Int      @id @default(autoincrement())
+  value      Int // For example: 1 for a positive vote, -1 for a negative vote
+  createdAt  DateTime @default(now())
+  // The user casting the vote
+  user       user     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userId     String
+  voterTrust Int
+  // The report being voted on
+  report     Report   @relation(fields: [reportId], references: [id])
+  reportId   Int
+
+  @@unique([userId, reportId])
+}

@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/test/page.tsx"],"sourcesContent":["import Map from \"react-map-gl/maplibre\";\nimport \"maplibre-gl/dist/maplibre-gl.css\";\n\nconst page = () => {\n  return (\n    <div>\n      <Map\n        initialViewState={{\n          longitude: -73.9822,\n          latitude: 40.7685,\n          zoom: 14,\n        }}\n        style={{ width: \"100%\", height: \"100%\" }}\n        mapStyle=\"https://maps.geoapify.com/v1/styles/osm-carto/style.json\"\n      />\n    </div>\n  );\n};\n\nexport default page;\n"],"names":[],"mappings":";;;;AAAA;AAAA;;;;AAGA,MAAM,OAAO;IACX,qBACE,8OAAC;kBACC,cAAA,8OAAC,+MAAA,CAAA,UAAG;YACF,kBAAkB;gBAChB,WAAW,CAAC;gBACZ,UAAU;gBACV,MAAM;YACR;YACA,OAAO;gBAAE,OAAO;gBAAQ,QAAQ;YAAO;YACvC,UAAS;;;;;;;;;;;AAIjB;uCAEe"}},
+    {"offset": {"line": 41, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 52, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 52, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

@@ -1,0 +1,49 @@
+{
+  "node": {
+    "602f6144dfcd5f1c10d1da023a25ec9c8bc828ebd0": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40505c22437c796a55ec1190fcea16076c413aa4de": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "0067dadd9a26406a33b2bacb304ae0b59d912e9b71": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "407161fb5fdfd1f1fb5624ebfbd73cb86b2f7f3a15": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}
