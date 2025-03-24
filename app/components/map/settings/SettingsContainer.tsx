@@ -10,12 +10,12 @@ export default function SettingsContainer() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed top-28 left-6 z-10">
+    <div className="fixed top-18 left-6 z-10">
       <div className="relative">
         <Button
           className={`absolute top-7 left-3 bg-white ${
             isOpen ? "shadow-none" : "shadow"
-          } rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-100`}
+          } rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-100 text-black`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <MixerHorizontalIcon className="h-6 w-6" />

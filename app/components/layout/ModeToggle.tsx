@@ -2,21 +2,19 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
 
 const ModeToggle = () => {
   const { theme, setTheme } = useTheme();
 
   return (
-    <button
+    <Button
       onClick={() => (theme === "dark" ? setTheme("light") : setTheme("dark"))}
-      className="p-2 border rounded transition"
-      style={{
-        backgroundColor: theme === "dark" ? "#333" : "#fff",
-        color: theme === "dark" ? "#fff" : "#000",
-      }}
+      className="outline"
+      variant={"outline"}
     >
       {theme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-    </button>
+    </Button>
   );
 };
 

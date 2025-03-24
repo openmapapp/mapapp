@@ -33,6 +33,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 ;
 async function authMiddleware(request) {
+    const { pathname } = request.nextUrl;
     const { data: session } = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$better$2d$fetch$2f$fetch$2f$dist$2f$index$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["betterFetch"])("/api/auth/get-session", {
         baseURL: request.nextUrl.origin,
         headers: {
@@ -40,18 +41,49 @@ async function authMiddleware(request) {
             cookie: request.headers.get("cookie") || ""
         }
     });
-    //if there is no session, redirect to the sign-in page.
-    if (!session) {
+    const res = await fetch(`${request.nextUrl.origin}/api/global-settings`, {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-store"
+        }
+    });
+    if (!res.ok) {
+        console.error("Failed to fetch global settings");
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/sign-in", request.url));
+    }
+    let globalSettings;
+    try {
+        globalSettings = await res.json();
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/sign-in", request.url));
+    }
+    //Protect site based on settings
+    if (globalSettings.mapOpenToVisitors === false && !session) {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/sign-in", request.url));
+    }
+    if (request.nextUrl.pathname === "/signup" && globalSettings.registrationMode === "invite-only") {
+        const inviteCode = request.nextUrl.searchParams.get("invite");
+        if (!inviteCode) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/", request.url));
+        }
+    }
+    //Role-based access control
+    const isAdmin = session?.user.role === "admin";
+    const isModerator = session?.user.role === "moderator";
+    if (pathname.startsWith("/admin") && !isAdmin) {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/", request.url));
+    }
+    if (pathname.startsWith("/moderator") && !(isAdmin || isModerator)) {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/", request.url));
     }
     return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].next();
 }
 const config = {
     matcher: [
-        "/dashboard",
-        "/test",
-        "/settings",
-        "/api"
+        "/",
+        "/admin/:path*",
+        "/moderator/:path*"
     ]
 };
 }}),

@@ -22,22 +22,6 @@ const reportTypeIcons = {
   6: smoke,
 };
 
-const getMarkerColor = (trustScore: number) => {
-  if (trustScore >= 4)
-    return "bg-green-300 shadow-green-400 before:border-t-green-300";
-  if (trustScore >= 2)
-    return "bg-yellow-300 shadow-yellow-400 before:border-t-yellow-300";
-  return "bg-red-300 shadow-red-400 before:border-t-red-300";
-};
-
-const getMarkerOpacity = (createdAt: string) => {
-  const reportDate = new Date(createdAt);
-  const now = new Date();
-  const hoursElapsed =
-    (now.getTime() - reportDate.getTime()) / (1000 * 60 * 60);
-  return hoursElapsed < 1 ? "1" : "0.8";
-};
-
 export default function ReportMarkers({ setSelectedReport, userId }) {
   const { reports, setReports } = useData();
   const [newReportId, setNewReportId] = useState<string | null>(null);
@@ -48,7 +32,6 @@ export default function ReportMarkers({ setSelectedReport, userId }) {
         if (report.isRemoving) return null;
 
         const iconSrc = reportTypeIcons[report.reportTypeId] || marker;
-        const markerColor = getMarkerColor(report.trustScore);
         const isNew = report.id === newReportId;
 
         return (
@@ -75,7 +58,7 @@ export default function ReportMarkers({ setSelectedReport, userId }) {
               exit={{ opacity: 0, y: -50 }}
             >
               <div
-                className={`relative flex items-center justify-center h-12 w-12 rounded-full opacity-95 shadow-md ${markerColor} p-1 before:content-[''] before:absolute before:bottom-[-28px] before:left-1/2 before:-translate-x-1/2 before:border-[15px] before:border-transparent -translate-y-4`}
+                className={`relative flex items-center justify-center h-12 w-12 rounded-full opacity-95 shadow-md bg-white before:border-t-white p-1 before:content-[''] before:absolute before:bottom-[-28px] before:left-1/2 before:-translate-x-1/2 before:border-[15px] before:border-transparent -translate-y-4`}
               >
                 <Image
                   src={iconSrc}

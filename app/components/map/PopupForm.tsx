@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { postReport } from "@/actions/postReport";
+import { updateReport } from "@/actions/updateReport";
 import { useSession } from "@/app/lib/auth-client";
 import { useData } from "@/app/components/layout/DataProvider";
 
@@ -25,86 +26,147 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Plus, Minus } from "lucide-react";
 
 interface PopupFormProps {
   latitude: number;
   longitude: number;
+  existingReport?: any;
+  setEditing: (editing: boolean) => void;
   onClose: () => void;
 }
 
-const baseSchema = z.object({
+const FormSchema = z.object({
   reportTypeId: z.string().min(1, "Please select a report type"),
-  description: z.string().optional(),
+  dynamicFields: z.record(z.string()).optional(),
 });
 
-const PopupForm = ({ latitude, longitude, onClose }: PopupFormProps) => {
-  const { reportTypes } = useData();
+const PopupForm = ({
+  latitude,
+  longitude,
+  existingReport,
+  setSelectedReport,
+  setEditing,
+  onClose,
+}: PopupFormProps) => {
+  const { reportTypes, globalSettings } = useData();
   const { data: session } = useSession();
 
   const userId = session?.user?.id || "";
   const trustScore = session?.user?.trust || 1;
+  const [loading, setLoading] = useState(false);
+
+  const reportData = existingReport || { reportTypeId: "", description: "{}" };
 
   const [selectedReportType, setSelectedReportType] = useState<string | null>(
-    reportTypes.length > 0 ? String(reportTypes[0].id) : null
+    () => {
+      if (existingReport) {
+        return String(existingReport.reportTypeId);
+      }
+      if (reportTypes.length > 0) {
+        return String(reportTypes[0].id);
+      }
+      return null;
+    }
   );
-  const [loading, setLoading] = useState(false);
+  const [selectedFields, setSelectedFields] = useState<string[]>(() => {
+    if (!existingReport?.description) return [];
+    try {
+      return Object.keys(JSON.parse(reportData.description));
+    } catch (error) {
+      console.error("Error parsing report description:", error);
+      return [];
+    }
+  });
+
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      reportTypeId: reportData ? String(reportData.reportTypeId) : "",
+      dynamicFields: reportData?.description
+        ? JSON.parse(reportData.description)
+        : {},
+    },
+  });
+
+  console.log("existingReport", existingReport);
 
   const selectedReport = reportTypes.find(
     (type) => String(type.id) === selectedReportType
   );
+  const availableFields = selectedReport?.fields || [];
 
-  const dynamicSchema = baseSchema.extend(
-    selectedReport?.fields?.reduce(
-      (schema, field) => ({
-        ...schema,
-        [field]: z.string().optional(),
-      }),
-      {}
-    ) ?? {}
-  );
+  useEffect(() => {
+    if (existingReport) {
+      form.setValue("reportTypeId", String(existingReport.reportTypeId));
+      form.setValue(
+        "dynamicFields",
+        existingReport.description ? JSON.parse(existingReport.description) : {}
+      );
+    }
+  }, [existingReport, form]);
 
-  const form = useForm({
-    resolver: zodResolver(dynamicSchema),
-    defaultValues: {
-      reportTypeId: selectedReportType || "",
-      description: "",
-      ...(selectedReport?.fields?.reduce(
-        (acc, field) => ({
-          ...acc,
-          [field]: "",
-        }),
-        {}
-      ) ?? {}),
-    },
-  });
+  // Add a field to the form
+  const addField = (field: string) => {
+    if (!selectedFields.includes(field)) {
+      setSelectedFields((prev) => [...prev, field]);
+      form.setValue(
+        `dynamicFields.${field}`,
+        form.getValues(`dynamicFields.${field}`) || ""
+      );
+    }
+  };
+
+  // Remove a field from the form
+  const removeField = (field: string) => {
+    setSelectedFields((prev) => prev.filter((f) => f !== field));
+    form.setValue(`dynamicFields.${field}`, "");
+    form.unregister(`dynamicFields.${field}`);
+  };
 
   const handleSubmit = async (values: any) => {
+    if (!session && !globalSettings?.submitReportsOpen) {
+      toast.error("You must be logged in to submit a report.");
+      return;
+    }
     setLoading(true);
 
     try {
-      const formDataObject = selectedReport?.fields?.reduce((acc, field) => {
-        acc[field] = values[field] || "";
-        return acc;
-      }, {});
-
       const payload = {
         latitude,
         longitude,
         reportTypeId: Number(values.reportTypeId),
         trustScore,
-        userId,
-        description: formDataObject,
+        userId: userId || null,
+        description: JSON.stringify(values.dynamicFields || {}),
       };
 
-      const response = await postReport(payload);
+      if (existingReport) {
+        const updatedReport = await updateReport(
+          existingReport.id,
+          { ...values, reportTypeId: Number(values.reportTypeId) },
+          session
+        );
+        toast.success("Report updated successfully!");
+        setSelectedReport(updatedReport);
+      } else {
+        const response = await postReport(payload);
 
-      if (!response) {
-        throw new Error("Failed to submit report");
+        if (!response) {
+          throw new Error("Failed to submit report");
+        }
+        toast.success("Report submitted successfully!");
       }
 
-      toast.success("Report submitted successfully!");
+      setSelectedFields([]);
       form.reset();
       onClose();
     } catch (error) {
@@ -115,11 +177,15 @@ const PopupForm = ({ latitude, longitude, onClose }: PopupFormProps) => {
     }
   };
 
+  if (!selectedReportType && reportTypes.length === 0) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-4 p-4 "
+        className="space-y-4 p-4 z-30"
       >
         {/* Report Type Selection */}
         <FormField
@@ -131,7 +197,8 @@ const PopupForm = ({ latitude, longitude, onClose }: PopupFormProps) => {
               <Select
                 onValueChange={(value) => {
                   setSelectedReportType(value);
-                  field.onChange(value);
+                  setSelectedFields([]);
+                  form.setValue("reportTypeId", value);
                 }}
                 value={field.value}
               >
@@ -157,18 +224,52 @@ const PopupForm = ({ latitude, longitude, onClose }: PopupFormProps) => {
           )}
         />
 
-        {/* Dynamic Fields Based on Report Type */}
-        {selectedReport?.fields?.map((field) => (
+        {/* Dynamic Fields Selection */}
+        {availableFields.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Field
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white">
+              {availableFields
+                .filter((field) => !selectedFields.includes(field)) // Filter out already selected fields
+                .map((field) => (
+                  <DropdownMenuItem
+                    key={field}
+                    onClick={() => addField(field)}
+                    className="hover:bg-gray-100"
+                  >
+                    {field}
+                  </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Render Selected Fields */}
+        {selectedFields.map((field) => (
           <FormField
             key={field}
             control={form.control}
-            name={field}
+            name={`dynamicFields.${field}`}
             render={({ field: formField }) => (
               <FormItem>
                 <FormLabel>{field}</FormLabel>
-                <FormControl>
-                  <Input {...formField} placeholder={`Enter ${field}...`} />
-                </FormControl>
+                <div className="flex gap-2 items-center">
+                  <FormControl>
+                    <Input {...formField} placeholder={`Enter ${field}...`} />
+                  </FormControl>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeField(field)}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -181,7 +282,7 @@ const PopupForm = ({ latitude, longitude, onClose }: PopupFormProps) => {
             {loading ? (
               <span className="flex items-center">Submitting...</span>
             ) : (
-              "Submit Report"
+              "Submit"
             )}
           </Button>
           <Button

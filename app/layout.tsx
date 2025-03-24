@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/layout/ThemeProvider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DataProvider } from "./components/layout/DataProvider";
 import { SocketProvider } from "./components/socketProvider";
 import Navbar from "./components/layout/Navbar";
 import { Toaster } from "@/components/ui/sonner";
+import { AdminSidebar } from "./components/settings/AdminSidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,6 +24,15 @@ export const metadata: Metadata = {
   description: "Tag away",
 };
 
+const META_THEME_COLORS = {
+  light: "#ffffff",
+  dark: "#09090b",
+};
+
+export const viewport: Viewport = {
+  themeColor: META_THEME_COLORS.light,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,20 +40,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none`}
       >
         <ThemeProvider
-          attribute="data-theme"
+          attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
           <SocketProvider>
             <DataProvider>
-              <Navbar />
-              {children}
-              <Toaster richColors />
+              <main className="flex flex-col">
+                <Navbar />
+                {children}
+                <Toaster richColors />
+              </main>
             </DataProvider>
           </SocketProvider>
         </ThemeProvider>

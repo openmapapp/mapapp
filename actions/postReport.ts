@@ -1,6 +1,7 @@
 "use server";
 
 import db from "../db";
+import { Prisma } from "@prisma/client";
 
 interface ReportPayload {
   latitude: number;
@@ -8,7 +9,7 @@ interface ReportPayload {
   reportTypeId: number;
   trustScore: number;
   userId: string;
-  description: Record<string, string> | null; // ✅ Ensuring it's an object
+  description?: Record<string, string>;
 }
 
 export async function postReport(payload: ReportPayload) {
@@ -19,7 +20,7 @@ export async function postReport(payload: ReportPayload) {
       reportTypeId,
       trustScore,
       userId,
-      description,
+      description = {},
     } = payload;
 
     const image = null;
@@ -28,10 +29,12 @@ export async function postReport(payload: ReportPayload) {
       data: {
         lat: latitude,
         long: longitude,
-        description: JSON.stringify(description) ?? null,
+        description: Object.keys(description).length
+          ? (description as Prisma.JsonObject)
+          : Prisma.JsonNull,
         image: image ?? null,
         trustScore,
-        submittedById: userId,
+        submittedById: userId || null,
         reportTypeId,
       },
     });
@@ -49,7 +52,19 @@ export async function postReport(payload: ReportPayload) {
 
     return report;
   } catch (error) {
-    console.error(error);
+    console.error("Error posting report", error);
     return { error: "Failed to post report" };
+  }
+}
+
+export async function handleDeletedUser(userId: string) {
+  try {
+    await db.report.updateMany({
+      where: { submittedById: userId },
+      data: { deletedUserId: userId },
+    });
+  } catch (error) {
+    console.error("Error deleting user", error);
+    return { error: "Failed to delete user" };
   }
 }

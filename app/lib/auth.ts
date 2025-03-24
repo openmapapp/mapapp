@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { username, customSession } from "better-auth/plugins";
+import { username, admin } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
@@ -25,6 +25,10 @@ export const auth = betterAuth({
   },
   emailAndPassword: { enabled: true, autoSignIn: true },
   user: {
+    deleteUser: {
+      enabled: true,
+      requirePassword: true,
+    },
     additionalFields: {
       trust: {
         type: "number",
@@ -34,22 +38,7 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [
-    username(),
-    // customSession(async ({ user, session }) => {
-    //   const trust1 = findUserTrust(session.sesion.userId)
-    //   const { trust } = user.additionalFields.trust;
-    //   return {
-    //     trust,
-    //     user: {
-    //       id: user.id,
-    //       username: user.username,
-    //       trust,
-    //     },
-    //     session,
-    //   };
-    // }),
-  ],
+  plugins: [username(), admin()],
 });
 
 type Session = typeof auth.$Infer.Session;

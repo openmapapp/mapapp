@@ -119,7 +119,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$au
 var __TURBOPACK__imported__module__$5b$externals$5d2f$pg__$5b$external$5d$__$28$pg$2c$__cjs$29$__ = __turbopack_import__("[externals]/pg [external] (pg, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$kysely$2f$dist$2f$esm$2f$dialect$2f$postgres$2f$postgres$2d$dialect$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/kysely/dist/esm/dialect/postgres/postgres-dialect.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_import__("[project]/node_modules/better-auth/dist/index.js [app-route] (ecmascript) <locals>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$4FIFM3LN$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/better-auth/dist/chunk-4FIFM3LN.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$M7C7TKIU$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/better-auth/dist/chunk-M7C7TKIU.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$NP2H7VJV$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/better-auth/dist/chunk-NP2H7VJV.js [app-route] (ecmascript)");
 ;
 ;
 ;
@@ -148,6 +149,10 @@ const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f
         autoSignIn: true
     },
     user: {
+        deleteUser: {
+            enabled: true,
+            requirePassword: true
+        },
         additionalFields: {
             trust: {
                 type: "number",
@@ -158,7 +163,8 @@ const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f
         }
     },
     plugins: [
-        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$4FIFM3LN$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["username"])()
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$M7C7TKIU$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["username"])(),
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$better$2d$auth$2f$dist$2f$chunk$2d$NP2H7VJV$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["admin"])()
     ]
 });
 }}),

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/sign-up/page.tsx"],"sourcesContent":["\"use client\";\n\nimport { useSearchParams } from \"next/navigation\";\nimport SignUpForm from \"@/app/components/auth/SignUpForm\";\n\nexport default function SignUpPage() {\n  const searchParams = useSearchParams();\n  const inviteCode = searchParams.get(\"invite\") || \"\";\n\n  return (\n    <div className=\"max-w-md mx-auto p-6\">\n      <h2 className=\"text-2xl font-bold mb-4\">Register</h2>\n      <SignUpForm inviteCode={inviteCode} />\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACtB,MAAM,eAAe,CAAA,GAAA,kIAAA,CAAA,kBAAe,AAAD;IACnC,MAAM,aAAa,aAAa,GAAG,CAAC,aAAa;IAEjD,qBACE,8OAAC;QAAI,WAAU;;0BACb,8OAAC;gBAAG,WAAU;0BAA0B;;;;;;0BACxC,8OAAC,wIAAA,CAAA,UAAU;gBAAC,YAAY;;;;;;;;;;;;AAG9B"}},
+    {"offset": {"line": 45, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/test/page.tsx"],"sourcesContent":["\"use client\";\n\nimport Map from \"react-map-gl/maplibre\";\nimport \"maplibre-gl/dist/maplibre-gl.css\";\n\nconst page = () => {\n  return <div className=\"h-screen w-screen\">Blank</div>;\n};\n\nexport default page;\n"],"names":[],"mappings":";;;;AAAA;;;AAKA,MAAM,OAAO;IACX,qBAAO,6LAAC;QAAI,WAAU;kBAAoB;;;;;;AAC5C;uCAEe"}},
-    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}

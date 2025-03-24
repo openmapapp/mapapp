@@ -16,7 +16,17 @@ export async function getReports(timeRange: number = 4) {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      votes: {
+        where: { value: 1 },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
   });
   // Map the result to a simpler array of objects if needed.
-  return reports;
+  return reports.map((report) => ({
+    ...report,
+    lastSighting: report.votes.length > 0 ? report.votes[0].createdAt : null, // Use latest vote timestamp
+  }));
 }

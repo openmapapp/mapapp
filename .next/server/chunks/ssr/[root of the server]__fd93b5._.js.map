@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 23, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/components/Map.tsx"],"sourcesContent":["\"use client\";\n\nimport { MapContainer, Marker, TileLayer, Tooltip } from \"react-leaflet\";\nimport \"leaflet/dist/leaflet.css\";\nimport \"leaflet-defaulticon-compatibility\";\nimport \"leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css\";\n\nexport default function Map(props: any) {\n  const { position, zoom } = props;\n\n  return (\n    <MapContainer center={position} zoom={zoom} scrollWheelZoom={false}>\n      <TileLayer url=\"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png\" />\n      <Marker position={position}>\n        <Tooltip permanent>Home</Tooltip>\n      </Marker>\n    </MapContainer>\n  );\n}\n"],"names":[],"mappings":";;;;AAIA;AAFA;AAAA;AAAA;AAAA;AAFA;;;;;;AAOe,SAAS,IAAI,KAAU;IACpC,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE,GAAG;IAE3B,qBACE,8OAAC,uJAAA,CAAA,eAAY;QAAC,QAAQ;QAAU,MAAM;QAAM,iBAAiB;;0BAC3D,8OAAC,oJAAA,CAAA,YAAS;gBAAC,KAAI;;;;;;0BACf,8OAAC,iJAAA,CAAA,SAAM;gBAAC,UAAU;0BAChB,cAAA,8OAAC,kJAAA,CAAA,UAAO;oBAAC,SAAS;8BAAC;;;;;;;;;;;;;;;;;AAI3B"}},
-    {"offset": {"line": 74, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}

@@ -1,9 +1,9 @@
 {
   "node": {
-    "602f6144dfcd5f1c10d1da023a25ec9c8bc828ebd0": {
+    "000dbe54a7bfb9b0635ff4e984a74370b913fd1fe0": {
       "workers": {
         "app/page": {
-          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
@@ -11,10 +11,10 @@
         "app/page": "action-browser"
       }
     },
-    "40505c22437c796a55ec1190fcea16076c413aa4de": {
+    "40e4be2460b9fc8133f79cf220f9b4e530f4ab891a": {
       "workers": {
         "app/page": {
-          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
@@ -22,10 +22,10 @@
         "app/page": "action-browser"
       }
     },
-    "0067dadd9a26406a33b2bacb304ae0b59d912e9b71": {
+    "60d7caf4c34c68298806ec8c469ac629fc494ef713": {
       "workers": {
         "app/page": {
-          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
@@ -33,10 +33,98 @@
         "app/page": "action-browser"
       }
     },
-    "407161fb5fdfd1f1fb5624ebfbd73cb86b2f7f3a15": {
+    "00f4c7477b95e20dbcc103947836bc8ba9806c04ad": {
       "workers": {
         "app/page": {
-          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40b27db475edb8debc13ddf78a81dbb51ec30d0dc0": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "4067a203f2b3ae0098604c9bdcad336d76b680c541": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40a6ca9e00c27194e167ed4d8740ecd752ac88d619": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40fe745472845a1892c6f058eae469d31a64802285": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "6072878db97e1d4c40d579b813a1f4c096eb94660c": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "70d4756192b48fe9a1b181174cfad5108811368c6b": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40a346a1026278e864abae708136859a5f25669b42": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "60744b0a65037390c21970a8c19d41228540a200cb": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
