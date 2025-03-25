@@ -78,9 +78,11 @@ const requireRole = (session, requiredRole)=>{
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-/* __next_internal_action_entry_do_not_use__ {"40e4be2460b9fc8133f79cf220f9b4e530f4ab891a":"fetchUsers","60d7caf4c34c68298806ec8c469ac629fc494ef713":"updateGlobalSettings"} */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ {"40e4be2460b9fc8133f79cf220f9b4e530f4ab891a":"fetchUsers","60d7caf4c34c68298806ec8c469ac629fc494ef713":"updateGlobalSettings","60ed96673b12aa179b12549bd6b3a4aa642d16f1b5":"deleteUser","7047e49ae936daefad9e6564922da49085f02cc24c":"updateUserRole"} */ __turbopack_context__.s({
+    "deleteUser": (()=>deleteUser),
     "fetchUsers": (()=>fetchUsers),
-    "updateGlobalSettings": (()=>updateGlobalSettings)
+    "updateGlobalSettings": (()=>updateGlobalSettings),
+    "updateUserRole": (()=>updateUserRole)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
@@ -107,18 +109,74 @@ async function /*#__TURBOPACK_DISABLE_EXPORT_MERGING__*/ fetchUsers(session) {
         select: {
             id: true,
             username: true,
+            email: true,
+            createdAt: true,
             role: true
         }
     });
-    return users;
+    // Format createdAt to "hh:mm MM/DD/YYYY"
+    const formattedUsers = users.map((user)=>({
+            ...user,
+            role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+            createdAt: user.createdAt.toLocaleString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
+                hour12: false
+            })
+        }));
+    return formattedUsers;
+}
+async function /*#__TURBOPACK_DISABLE_EXPORT_MERGING__*/ updateUserRole(adminSession, userId, newRole) {
+    try {
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$requireRole$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["requireRole"])(adminSession, "admin"); // Restrict to admins only
+        await __TURBOPACK__imported__module__$5b$project$5d2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                role: newRole
+            }
+        });
+        return {
+            success: true
+        };
+    } catch (error) {
+        return {
+            error: error
+        };
+    }
+}
+async function /*#__TURBOPACK_DISABLE_EXPORT_MERGING__*/ deleteUser(adminSession, userId) {
+    try {
+        (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$requireRole$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["requireRole"])(adminSession, "admin"); // Restrict to admins only
+        await __TURBOPACK__imported__module__$5b$project$5d2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].user.delete({
+            where: {
+                id: userId
+            }
+        });
+        return {
+            success: true
+        };
+    } catch (error) {
+        return {
+            error: error
+        };
+    }
 }
 ;
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
     updateGlobalSettings,
-    fetchUsers
+    fetchUsers,
+    updateUserRole,
+    deleteUser
 ]);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateGlobalSettings, "60d7caf4c34c68298806ec8c469ac629fc494ef713", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(fetchUsers, "40e4be2460b9fc8133f79cf220f9b4e530f4ab891a", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateUserRole, "7047e49ae936daefad9e6564922da49085f02cc24c", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteUser, "60ed96673b12aa179b12549bd6b3a4aa642d16f1b5", null);
 }}),
 "[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -667,6 +725,8 @@ __turbopack_context__.s({});
 ;
 ;
 ;
+;
+;
 }}),
 "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <module evaluation>": ((__turbopack_context__) => {
 "use strict";
@@ -703,6 +763,8 @@ __turbopack_context__.s({
     "6072878db97e1d4c40d579b813a1f4c096eb94660c": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["deleteReport"]),
     "60744b0a65037390c21970a8c19d41228540a200cb": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getUserVotes"]),
     "60d7caf4c34c68298806ec8c469ac629fc494ef713": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["updateGlobalSettings"]),
+    "60ed96673b12aa179b12549bd6b3a4aa642d16f1b5": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["deleteUser"]),
+    "7047e49ae936daefad9e6564922da49085f02cc24c": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["updateUserRole"]),
     "70d4756192b48fe9a1b181174cfad5108811368c6b": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["updateReport"])
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/actions/globalSettings.ts [app-rsc] (ecmascript)");
@@ -734,6 +796,8 @@ __turbopack_context__.s({
     "6072878db97e1d4c40d579b813a1f4c096eb94660c": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["6072878db97e1d4c40d579b813a1f4c096eb94660c"]),
     "60744b0a65037390c21970a8c19d41228540a200cb": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["60744b0a65037390c21970a8c19d41228540a200cb"]),
     "60d7caf4c34c68298806ec8c469ac629fc494ef713": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["60d7caf4c34c68298806ec8c469ac629fc494ef713"]),
+    "60ed96673b12aa179b12549bd6b3a4aa642d16f1b5": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["60ed96673b12aa179b12549bd6b3a4aa642d16f1b5"]),
+    "7047e49ae936daefad9e6564922da49085f02cc24c": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["7047e49ae936daefad9e6564922da49085f02cc24c"]),
     "70d4756192b48fe9a1b181174cfad5108811368c6b": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["70d4756192b48fe9a1b181174cfad5108811368c6b"])
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$actions$2f$globalSettings$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$actions$2f$adminActions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$actions$2f$getReportTypes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE3__$3d3e$__$225b$project$5d2f$actions$2f$getReports$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE4__$3d3e$__$225b$project$5d2f$actions$2f$postReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE5__$3d3e$__$225b$project$5d2f$actions$2f$validateInvite$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE6__$3d3e$__$225b$project$5d2f$actions$2f$deleteReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE7__$3d3e$__$225b$project$5d2f$actions$2f$updateReport$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE8__$3d3e$__$225b$project$5d2f$actions$2f$postVotes$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE9__$3d3e$__$225b$project$5d2f$actions$2f$getUserVote$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => "[project]/actions/globalSettings.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/actions/adminActions.ts [app-rsc] (ecmascript)", ACTIONS_MODULE2 => "[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)", ACTIONS_MODULE3 => "[project]/actions/getReports.ts [app-rsc] (ecmascript)", ACTIONS_MODULE4 => "[project]/actions/postReport.ts [app-rsc] (ecmascript)", ACTIONS_MODULE5 => "[project]/actions/validateInvite.ts [app-rsc] (ecmascript)", ACTIONS_MODULE6 => "[project]/actions/deleteReport.ts [app-rsc] (ecmascript)", ACTIONS_MODULE7 => "[project]/actions/updateReport.ts [app-rsc] (ecmascript)", ACTIONS_MODULE8 => "[project]/actions/postVotes.ts [app-rsc] (ecmascript)", ACTIONS_MODULE9 => "[project]/actions/getUserVote.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation>');

@@ -2506,7 +2506,7 @@ const Page = ()=>{
                     height: "100%",
                     position: "relative"
                 },
-                //mapStyle={"http://159.65.164.132:8080/data/v3.json"}
+                //mapStyle={"http://10.42.0.1:8080/styles/basic-preview/style.json"}
                 mapStyle: `https://api.maptiler.com/maps/streets/style.json?key=${("TURBOPACK compile-time value", "oMl1mvJaNTHSkt73s8WA")}`,
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$components$2f$map$2f$ReportMarkers$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {

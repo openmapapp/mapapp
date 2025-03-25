@@ -85,7 +85,7 @@ const Page = () => {
         maxZoom={globalSettings?.mapMaxZoom || 18}
         maxBounds={maxBounds}
         style={{ width: "100%", height: "100%", position: "relative" }}
-        //mapStyle={"http://159.65.164.132:8080/data/v3.json"}
+        //mapStyle={"http://10.42.0.1:8080/styles/basic-preview/style.json"}
         mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`}
       >
         <ReportMarkers setSelectedReport={setSelectedReport} userId={userId} />

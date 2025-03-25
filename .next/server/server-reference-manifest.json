@@ -6,6 +6,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -17,6 +21,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -27,6 +32,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -38,6 +47,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -48,6 +58,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -59,6 +73,59 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/page": "action-browser"
+      }
+    },
+    "60ed96673b12aa179b12549bd6b3a4aa642d16f1b5": {
+      "workers": {
+        "app/(pages)/admin/settings/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/_not-found/page": {
+          "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/page": "action-browser"
+      }
+    },
+    "7047e49ae936daefad9e6564922da49085f02cc24c": {
+      "workers": {
+        "app/(pages)/admin/settings/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/_not-found/page": {
+          "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/deleteReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE7 => \"[project]/actions/updateReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE8 => \"[project]/actions/postVotes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE9 => \"[project]/actions/getUserVote.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -69,6 +136,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -80,6 +151,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -90,6 +162,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -101,6 +177,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -111,6 +188,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -122,6 +203,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -132,6 +214,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -143,6 +229,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }
@@ -153,6 +240,10 @@
           "moduleId": "[project]/.next-internal/server/app/(pages)/admin/settings/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE6 => \"[project]/actions/generateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
+        "app/(pages)/sign-in/page": {
+          "moduleId": "[project]/.next-internal/server/app/(pages)/sign-in/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        },
         "app/_not-found/page": {
           "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/actions/globalSettings.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/actions/adminActions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/actions/getReportTypes.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/actions/getReports.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE4 => \"[project]/actions/postReport.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE5 => \"[project]/actions/validateInvite.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
@@ -164,6 +255,7 @@
       },
       "layer": {
         "app/(pages)/admin/settings/page": "action-browser",
+        "app/(pages)/sign-in/page": "action-browser",
         "app/_not-found/page": "action-browser",
         "app/page": "action-browser"
       }

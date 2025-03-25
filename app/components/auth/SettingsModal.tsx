@@ -189,7 +189,7 @@ export default function SettingsModal() {
       </DialogTrigger>
 
       {/* The Modal */}
-      <DialogContent className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+      <DialogContent className="bg-white dark:bg-inherit p-6 rounded-lg shadow-lg max-w-md mx-auto">
         <DialogTitle className="sr-only">User Settings</DialogTitle>
 
         {/* Username Change Form */}

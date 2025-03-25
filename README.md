@@ -107,13 +107,15 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 
 ### Functionality
 
-- [ ] More role management tools (e.g., promote to mod)
-- [ ] Add filter/sort options to user table
+- [x] More role management tools (e.g., promote to mod)
+- [x] Bulk changes to user modifications on the admin panel
+- [x] Add filter/sort options to user table
 
 ### UI
 
-- [ ] Admin user panel UI improvements
+- [x] Admin user panel UI improvements
 - [ ] Standardize UI across site
+- [ ] Make sure "Home" button accessible in admin panel
 - [ ] Orient ReportPopups so they don’t go outside the screen
 - [ ] Make mobile friendly
 - [ ] Make sure animations work for adding and removing pins, and on load. On load, pins should drop in staggered.

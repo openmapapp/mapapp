@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/Nathan/Library/CloudStorage/Dropbox/Tech/projects/mapapp/app/%28pages%29/sign-in/page.tsx"],"sourcesContent":["\"use client\";\n\nimport SignInForm from \"../../components/auth/SignInForm\";\n\nexport default function Page() {\n  return (\n    <div className=\"max-w-md mx-auto p-6\">\n      <h2 className=\"text-2xl font-bold mb-4\">Sign In</h2>\n      <SignInForm />\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;AAEA;AAFA;;;AAIe,SAAS;IACtB,qBACE,6LAAC;QAAI,WAAU;;0BACb,6LAAC;gBAAG,WAAU;0BAA0B;;;;;;0BACxC,6LAAC,2IAAA,CAAA,UAAU;;;;;;;;;;;AAGjB;KAPwB","debugId":null}}]
+}

@@ -27,7 +27,7 @@ const items = [
   },
   {
     id: "user",
-    title: "User",
+    title: "Users",
     url: "#",
     icon: Users,
   },
