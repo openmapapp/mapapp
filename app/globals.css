@@ -4,77 +4,380 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Make popup non-interactive during marker dragging */
+.marker-dragging .maplibregl-popup {
+  pointer-events: none !important;
+}
+
+/* Style to indicate the popup is in non-interactive mode */
+.marker-dragging .maplibregl-popup-content {
+  opacity: 0.7;
+}
+
+.mobile-nav-sheet {
+  z-index: 9999 !important;
+}
+
+.mobile-nav-sheet-overlay {
+  z-index: 9990 !important;
+}
+
+/* Ensure tooltips appear above popups with higher specificity */
+div[data-radix-popper-content-wrapper] {
+  z-index: 9900 !important;
+}
+
+/* Improve the tooltip positioning */
+[data-radix-popper-content] {
+  padding: 8px !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Force styling on maplibregl popups to match your theme */
+.maplibregl-popup {
+  z-index: 9800 !important;
+  max-width: 350px !important;
+}
+
+/* Control marker z-index to be below popups */
+.maplibregl-marker {
+  z-index: 9700 !important;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Ensure the marker content is clickable */
+.maplibregl-marker * {
+  pointer-events: none;
+}
+
+.maplibregl-popup-content {
+  background-color: var(--color-card) !important;
+  color: var(--color-card-foreground) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important; /* Force a consistent rounded corner */
+  padding: 0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden !important;
+}
+
+/* Increase the distance of the close button from the edge */
+.maplibregl-popup-close-button {
+  color: var(--color-muted-foreground) !important;
+  font-size: 18px !important;
+  padding: 8px !important;
+  right: 8px !important;
+  top: 8px !important;
+  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease !important;
+  background-color: transparent !important;
+  z-index: 30 !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-secondary-foreground) !important;
+}
+
+/* Add more space between the popup tip and the content */
+.maplibregl-popup-anchor-bottom .maplibregl-popup-content {
+  margin-bottom: 15px !important; /* Increase space for bottom anchored popups */
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-content {
+  margin-top: -15px !important; /* Increase space for top anchored popups */
+}
+
+/* Fix the popup tip (arrow) */
+.maplibregl-popup-tip {
+  display: none !important;
+}
+
+/* Style the tip specifically by anchor position */
+.maplibregl-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  border-bottom-color: var(--color-border) !important;
+  margin-top: 5px !important; /* Move the tip down a bit */
+}
+
+.maplibregl-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: var(--color-border) !important;
+  margin-bottom: 5px !important; /* Move the tip up a bit */
+}
+
+/* For mobile devices */
+@media (max-width: 640px) {
+  .maplibregl-popup {
+    max-width: 300px !important;
+  }
+  
+  .maplibregl-popup-content {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Ensure tooltips appear above map popups */
+.tooltip-content {
+  z-index: 9999 !important;
+}
+
+/* Fix map popups to always appear with the tip at the bottom */
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--color-border) !important;
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--color-border) !important;
+}
+
+/* Use consistent popup styling */
+.maplibregl-popup.report-popup .maplibregl-popup-content {
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Adjust popup positioning to ensure markers are visible */
+.maplibregl-popup.report-popup {
+  margin-bottom: 20px !important;
+}
+
+/* Animated marker styling */
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--color-primary);
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+}
+
+.marker-pin::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  margin: 3px 0 0 3px;
+  background: #fff;
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* Add additional padding inside the popup content for the form */
+.maplibregl-popup-content form {
+  padding: 16px !important;
+  padding-top: 24px !important; /* Extra padding at top to avoid close button */
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+}
+
+/* Add to your globals.css file */
+
+/* Custom map pin styling */
+.map-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: bottom center;
+}
+
+.map-pin-head {
+  width: 50px;
+  height: 50px;
+  border-radius: 100% !important;
+  background-color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.map-pin-needle {
+  height: 20px;
+  width: 3px;
+  position: relative;
+  z-index: 1;
+  margin-top: -5px;
+}
+
+.map-pin-base {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  margin-top: -3px;
+}
+
+/* Status indicators */
+.map-pin-verified .map-pin-head {
+  box-shadow: 0 0 0 3px var(--color-primary), 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.map-pin-verified .map-pin-needle,
+.map-pin-verified .map-pin-base {
+  background-color: var(--color-primary);
+}
+
+.map-pin-confirmed .map-pin-head {
+  box-shadow: 0 0 0 3px #10b981, 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.map-pin-confirmed .map-pin-needle,
+.map-pin-confirmed .map-pin-base {
+  background-color: #10b981; /* Green */
+}
+
+.map-pin-disputed .map-pin-head {
+  box-shadow: 0 0 0 3px #ef4444, 0 3px 6px rgba(0, 0, 0, 0.16);
+  opacity: 0.75;
+}
+
+.map-pin-disputed .map-pin-needle,
+.map-pin-disputed .map-pin-base {
+  background-color: #ef4444; /* Red */
+}
+
+.map-pin-default .map-pin-head {
+  box-shadow: 0 0 0 3px #9b9da0, 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.map-pin-default .map-pin-needle,
+.map-pin-default .map-pin-base {
+  background-color: #6b7280; /* Gray */
+}
+
+/* Animation for hover */
+.map-pin:hover {
+  transform: translateY(-5px);
+  transition: transform 0.2s ease;
+}
+
 :root {
-  --background: hsl(0, 0%, 95%);
-  --foreground: hsl(240 10% 3.9%);
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(240 10% 3.9%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(240 10% 3.9%);
-  --primary: hsl(240 5.9% 10%);
-  --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(240 4.8% 95.9%);
-  --secondary-foreground: hsl(240 5.9% 10%);
-  --muted: hsl(240 4.8% 95.9%);
-  --muted-foreground: hsl(240 3.8% 46.1%);
-  --accent: hsl(240, 5%, 92%);
-  --accent-foreground: hsl(240 5.9% 10%);
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(240 5.9% 90%);
-  --input: hsl(240 5.9% 90%);
-  --ring: hsl(240 10% 3.9%);
-  --chart-1: hsl(12 76% 61%);
-  --chart-2: hsl(173 58% 39%);
-  --chart-3: hsl(197 37% 24%);
-  --chart-4: hsl(43 74% 66%);
-  --chart-5: hsl(27 87% 67%);
+  /* Base colors with cartography-inspired palette */
+  --background: hsl(45, 25%, 97%);
+  --foreground: hsl(240, 10%, 3.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(240, 10%, 3.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(240, 10%, 3.9%);
+  
+  /* Primary - soft topographic green */
+  --primary: hsl(148, 30%, 40%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  
+  /* Secondary - parchment paper */
+  --secondary: hsl(36, 25%, 94%);
+  --secondary-foreground: hsl(35, 30%, 30%);
+  
+  /* Muted - terrain markings */
+  --muted: hsl(210, 15%, 94%);
+  --muted-foreground: hsl(210, 10%, 40%);
+  
+  /* Accent - compass accent */
+  --accent: hsl(26, 75%, 92%);
+  --accent-foreground: hsl(26, 75%, 30%);
+  
+  /* Destructive - warning markers */
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  
+  /* Border - contour lines */
+  --border: hsl(200, 10%, 85%);
+  --input: hsl(200, 10%, 80%);
+  --ring: hsl(148, 30%, 40%);
+  
+  /* Chart colors - topographic map palette */
+  --chart-1: hsl(145, 63%, 42%); /* Forest */
+  --chart-2: hsl(190, 65%, 52%); /* Water */
+  --chart-3: hsl(34, 74%, 66%);  /* Sand */
+  --chart-4: hsl(25, 65%, 55%);  /* Earth */
+  --chart-5: hsl(350, 60%, 55%); /* Landmarks */
+  
+  /* Misc */
   --radius: 0.6rem;
-  --sidebar-background: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
-  --sidebar: hsl(0 0% 98%);
+  
+  /* Sidebar */
+  --sidebar-background: hsl(46, 25%, 97%);
+  --sidebar-foreground: hsl(35, 15%, 30%);
+  --sidebar-primary: hsl(148, 30%, 40%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(36, 20%, 92%);
+  --sidebar-accent-foreground: hsl(35, 30%, 30%);
+  --sidebar-border: hsl(35, 15%, 85%);
+  --sidebar-ring: hsl(148, 30%, 40%);
+  --sidebar: hsl(46, 25%, 97%);
 }
 
 .dark {
-  --background: hsl(0, 0%, 25%);
-  --foreground: hsl(0 0% 98%);
-  --card: hsl(240 10% 3.9%);
-  --card-foreground: hsl(0 0% 98%);
-  --popover: hsl(240 10% 3.9%);
-  --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(0 0% 98%);
-  --primary-foreground: hsl(240 5.9% 10%);
-  --secondary: hsl(240 3.7% 15.9%);
-  --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(240 3.7% 15.9%);
-  --muted-foreground: hsl(240 5% 64.9%);
-  --accent: hsl(240 3.7% 15.9%);
-  --accent-foreground: hsl(0 0% 98%);
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(240 3.7% 15.9%);
-  --input: hsl(240 3.7% 15.9%);
-  --ring: hsl(240 4.9% 83.9%);
-  --chart-1: hsl(220 70% 50%);
-  --chart-2: hsl(160 60% 45%);
-  --chart-3: hsl(30 80% 55%);
-  --chart-4: hsl(280 65% 60%);
-  --chart-5: hsl(340 75% 55%);
-  --sidebar-background: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
-  --sidebar: hsl(240 5.9% 10%);
+  /* Dark mode - night map theme */
+  --background: hsl(220, 15%, 16%);
+  --foreground: hsl(210, 20%, 98%);
+  --card: hsl(220, 20%, 12%);
+  --card-foreground: hsl(210, 20%, 98%);
+  --popover: hsl(220, 20%, 12%);
+  --popover-foreground: hsl(210, 20%, 98%);
+  
+  /* Primary - night mode landmarks */
+  --primary: hsl(148, 30%, 50%);
+  --primary-foreground: hsl(220, 20%, 12%);
+  
+  /* Secondary - dark terrain */
+  --secondary: hsl(215, 25%, 25%);
+  --secondary-foreground: hsl(210, 20%, 98%);
+  
+  /* Muted - subdued terrain */
+  --muted: hsl(215, 15%, 25%);
+  --muted-foreground: hsl(215, 10%, 70%);
+  
+  /* Accent - nighttime markers */
+  --accent: hsl(215, 25%, 30%);
+  --accent-foreground: hsl(210, 20%, 90%);
+  
+  /* Destructive - warning markers */
+  --destructive: hsl(0, 62.8%, 50.6%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  
+  /* Border - subtle contours */
+  --border: hsl(215, 15%, 30%);
+  --input: hsl(215, 15%, 30%);
+  --ring: hsl(148, 30%, 50%);
+  
+  /* Chart colors - night mode topographic */
+  --chart-1: hsl(145, 50%, 40%); /* Forest */
+  --chart-2: hsl(190, 60%, 40%); /* Water */
+  --chart-3: hsl(34, 50%, 50%);  /* Sand */
+  --chart-4: hsl(25, 45%, 45%);  /* Earth */
+  --chart-5: hsl(350, 50%, 50%); /* Landmarks */
+  
+  /* Sidebar - night nav */
+  --sidebar-background: hsl(220, 20%, 14%);
+  --sidebar-foreground: hsl(210, 20%, 90%);
+  --sidebar-primary: hsl(148, 30%, 50%);
+  --sidebar-primary-foreground: hsl(220, 20%, 12%);
+  --sidebar-accent: hsl(215, 25%, 25%);
+  --sidebar-accent-foreground: hsl(210, 20%, 90%);
+  --sidebar-border: hsl(215, 15%, 25%);
+  --sidebar-ring: hsl(148, 30%, 50%);
+  --sidebar: hsl(220, 20%, 14%);
 }
 
 @theme inline {
@@ -141,6 +444,42 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+/* Map-specific styles */
+.maplibregl-popup-content {
+  @apply bg-card text-card-foreground border border-border shadow-lg rounded-lg p-4;
+}
+
+.maplibregl-popup-close-button {
+  @apply text-foreground hover:text-primary transition-colors p-1;
+}
+
+.maplibregl-ctrl-group {
+  @apply bg-background border border-border shadow-md;
+  z-index: 900 !important;
+}
+
+.maplibregl-ctrl-group button {
+  @apply text-foreground hover:text-primary transition-colors;
+}
+
+/* Add subtle paper texture to background in light mode */
+@media (prefers-color-scheme: light) {
+  body:not(.dark) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.05' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .maplibregl-popup-content {
+    @apply p-3 max-w-[90vw];
+  }
+  
+  .report-form-container {
+    @apply max-h-[60vh] overflow-y-auto;
   }
 }

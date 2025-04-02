@@ -5,35 +5,69 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/app/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { set } from "zod";
+import { LogOut } from "lucide-react";
 
-const SignOut = () => {
+// Define props interface with optional className for styling flexibility
+interface SignOutProps {
+  className?: string;
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
+  showIcon?: boolean;
+}
+
+const SignOut = ({
+  className = "",
+  variant = "outline",
+  showIcon = false,
+}: SignOutProps) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Export the handleSignOut function as a property of the component
   const handleSignOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onRequest: () => {
-          setLoading(true);
-          if (loading) {
-            toast.loading("Signing out...");
-          }
+    if (loading) return; // Prevent multiple clicks
+
+    setLoading(true);
+    toast.loading("Signing out...");
+
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Successfully signed out! Redirecting...");
+            router.push("/sign-in");
+          },
+          onError: () => {
+            toast.error("Failed to sign out. Please try again.");
+          },
         },
-        onSuccess: () => {
-          toast.success("Successfully signed out! Redirecting...");
-          router.push("/sign-in");
-          setLoading(false);
-        },
-      },
-    });
+      });
+    } catch (error) {
+      console.error("Sign out error:", error);
+      toast.error("An error occurred while signing out");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Button variant="outline" onClick={handleSignOut}>
+    <Button
+      id="sign-out-button"
+      variant={variant}
+      onClick={handleSignOut}
+      disabled={loading}
+      className={`${className} ${showIcon ? "gap-2" : ""}`}
+    >
+      {showIcon && <LogOut size={16} />}
       Sign Out
     </Button>
   );
 };
 
-export default SignOut;
+// Export the handleSignOut function for external use
+export { SignOut as default };

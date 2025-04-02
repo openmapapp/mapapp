@@ -16,7 +16,6 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // const socketInstance = io("http://localhost:3005");  for different server websocket url
     const socketInstance = io("http://localhost:3005");
 
     setSocket(socketInstance);

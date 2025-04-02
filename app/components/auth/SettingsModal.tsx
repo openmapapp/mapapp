@@ -13,7 +13,10 @@ import {
   DialogContent,
   DialogTrigger,
   DialogTitle,
+  DialogHeader,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Loader2, Settings, User, Key, AlertTriangle } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -37,6 +41,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+// Define schemas with proper typing
 const usernameSchema = z.object({
   username: z
     .string()
@@ -70,33 +75,46 @@ const deleteAccountSchema = z.object({
     .min(6, "Password is required to delete account"),
 });
 
+// Define types based on schemas
+type UsernameFormValues = z.infer<typeof usernameSchema>;
+type PasswordFormValues = z.infer<typeof passwordSchema>;
+type DeleteAccountFormValues = z.infer<typeof deleteAccountSchema>;
+
 export default function SettingsModal() {
   const router = useRouter();
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("username");
 
-  const usernameForm = useForm<z.infer<typeof usernameSchema>>({
+  // Form loading states
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Initialize forms with proper typing
+  const usernameForm = useForm<UsernameFormValues>({
     resolver: zodResolver(usernameSchema),
     defaultValues: { username: "" },
   });
 
-  const passwordForm = useForm<z.infer<typeof passwordSchema>>({
+  const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { currentPassword: "", newPassword: "" },
   });
 
-  const deleteAccountForm = useForm<z.infer<typeof deleteAccountSchema>>({
+  const deleteAccountForm = useForm<DeleteAccountFormValues>({
     resolver: zodResolver(deleteAccountSchema),
     defaultValues: { confirmDeletePassword: "" },
   });
 
   // Handle Username Change
-  const submitUsernameChange = async (values: { username: string }) => {
+  const submitUsernameChange = async (values: UsernameFormValues) => {
     if (!session?.user?.id) {
       toast.error("You must be logged in to change your username");
       return;
     }
 
+    setUsernameLoading(true);
     try {
       await authClient.updateUser(
         { username: values.username },
@@ -106,27 +124,27 @@ export default function SettingsModal() {
             router.refresh();
             usernameForm.reset();
           },
-          onError: () => {
-            toast.error("Error changing username");
+          onError: (error) => {
+            toast.error(error.message || "Error changing username");
           },
         }
       );
     } catch (error) {
       console.error(error);
       toast.error("Error changing username");
+    } finally {
+      setUsernameLoading(false);
     }
   };
 
   // Handle Password Change
-  const submitPasswordChange = async (values: {
-    newPassword: string;
-    currentPassword: string;
-  }) => {
+  const submitPasswordChange = async (values: PasswordFormValues) => {
     if (!session?.user?.id) {
       toast.error("You must be logged in to change your password");
       return;
     }
 
+    setPasswordLoading(true);
     try {
       await authClient.changePassword(
         {
@@ -139,26 +157,27 @@ export default function SettingsModal() {
             toast.success("Password changed successfully!");
             passwordForm.reset();
           },
-          onError: () => {
-            toast.error("Error changing password");
+          onError: (error) => {
+            toast.error(error.message || "Error changing password");
           },
         }
       );
     } catch (error) {
       console.error(error);
       toast.error("Error changing password");
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
   // Handle User Deletion
-  const submitUserDelete = async (values: {
-    confirmDeletePassword: string;
-  }) => {
+  const submitUserDelete = async (values: DeleteAccountFormValues) => {
     if (!session?.user?.id) {
       toast.error("You must be logged in to delete your account");
       return;
     }
 
+    setDeleteLoading(true);
     try {
       await handleDeletedUser(session?.user.id);
       await authClient.deleteUser(
@@ -167,157 +186,263 @@ export default function SettingsModal() {
           onSuccess: () => {
             router.refresh();
             toast.success("Account deleted");
+            setIsOpen(false);
           },
-          onError: () => {
-            toast.error("Error deleting account");
+          onError: (error) => {
+            toast.error(error.message || "Error deleting account");
           },
         }
       );
     } catch (error) {
       console.error(error);
       toast.error("Error deleting account");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {/* Trigger Button */}
+      {/* Trigger Button with ID for mobile menu */}
       <DialogTrigger asChild>
-        <Button variant="outline" className="">
-          User Settings
+        <Button id="settings-modal-trigger" variant="outline" size="icon">
+          <Settings size={18} />
+          <span className="sr-only">User Settings</span>
         </Button>
       </DialogTrigger>
 
       {/* The Modal */}
-      <DialogContent className="bg-white dark:bg-inherit p-6 rounded-lg shadow-lg max-w-md mx-auto">
-        <DialogTitle className="sr-only">User Settings</DialogTitle>
+      <DialogContent
+        className="sm:max-w-md max-w-[92vw] w-full p-4 sm:p-6 rounded-lg mx-auto"
+        onInteractOutside={(e) => {
+          // Prevent dismiss when clicking outside on mobile to avoid accidental dismissal
+          if (window.innerWidth < 640) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+            <Settings size={18} />
+            User Settings
+          </DialogTitle>
+          <DialogDescription>
+            Manage your account settings and preferences
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Username Change Form */}
-        <Form {...usernameForm}>
-          <form
-            onSubmit={usernameForm.handleSubmit(submitUsernameChange)}
-            className="space-y-4 p-4"
-          >
-            <FormField
-              control={usernameForm.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your new username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full">
-              Update Username
-            </Button>
-          </form>
-        </Form>
+        {/* Tabbed interface for better mobile experience */}
+        <Tabs
+          defaultValue="username"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="mt-4"
+        >
+          <TabsList className="grid grid-cols-3 mb-4">
+            <TabsTrigger value="username" className="flex items-center gap-1">
+              <User size={16} className="hidden sm:block" />
+              Username
+            </TabsTrigger>
+            <TabsTrigger value="password" className="flex items-center gap-1">
+              <Key size={16} className="hidden sm:block" />
+              Password
+            </TabsTrigger>
+            <TabsTrigger
+              value="delete"
+              className="flex items-center gap-1 text-destructive"
+            >
+              <AlertTriangle size={16} className="hidden sm:block" />
+              Delete
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Password Change Form */}
-        <Form {...passwordForm}>
-          <form
-            onSubmit={passwordForm.handleSubmit(submitPasswordChange)}
-            className="space-y-4 p-4"
-          >
-            <FormField
-              control={passwordForm.control}
-              name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your current password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={passwordForm.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your new password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full">
-              Update Password
-            </Button>
-          </form>
-        </Form>
-
-        {/* Delete Account Form */}
-        <div className="flex justify-center">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant={"destructive"}
-                className="bg-red-600 shadow-md hover:bg-red-500 hover:cursor-pointer text-white border border-black mt-4"
+          {/* Username Change Form */}
+          <TabsContent value="username" className="space-y-4">
+            <Form {...usernameForm}>
+              <form
+                onSubmit={usernameForm.handleSubmit(submitUsernameChange)}
+                className="space-y-4"
               >
-                Delete Account
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action will permanently delete your account and remove
-                  your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <Form {...deleteAccountForm}>
-                <form
-                  onSubmit={deleteAccountForm.handleSubmit(submitUserDelete)}
-                  className="space-y-4 p-4"
+                <FormField
+                  control={usernameForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={`Enter new username${
+                            session?.user?.username
+                              ? ` (current: ${session.user.username})`
+                              : ""
+                          }`}
+                          className="w-full"
+                          disabled={usernameLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={usernameLoading}
                 >
-                  <FormField
-                    control={deleteAccountForm.control}
-                    name="confirmDeletePassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirm Delete Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter your password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      type="submit"
-                      className="bg-red-500 text-white hover:bg-red-600"
-                    >
-                      Delete Account
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </form>
-              </Form>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+                  {usernameLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Username"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+
+          {/* Password Change Form */}
+          <TabsContent value="password" className="space-y-4">
+            <Form {...passwordForm}>
+              <form
+                onSubmit={passwordForm.handleSubmit(submitPasswordChange)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={passwordForm.control}
+                  name="currentPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your current password"
+                          className="w-full"
+                          disabled={passwordLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={passwordForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your new password"
+                          className="w-full"
+                          disabled={passwordLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={passwordLoading}
+                >
+                  {passwordLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Password"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+
+          {/* Delete Account Tab */}
+          <TabsContent value="delete" className="space-y-4">
+            <div className="bg-destructive/10 p-4 rounded-md mb-4">
+              <h3 className="text-destructive font-semibold flex items-center gap-2">
+                <AlertTriangle size={18} />
+                Warning: This action cannot be undone
+              </h3>
+              <p className="text-sm mt-2">
+                Deleting your account will permanently remove all your data from
+                our servers.
+              </p>
+            </div>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full">
+                  Delete My Account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action will permanently delete your account and remove
+                    all your personal data from our servers. This cannot be
+                    undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <Form {...deleteAccountForm}>
+                  <form
+                    onSubmit={deleteAccountForm.handleSubmit(submitUserDelete)}
+                    className="space-y-4 py-2"
+                  >
+                    <FormField
+                      control={deleteAccountForm.control}
+                      name="confirmDeletePassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm with your password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="Enter your password"
+                              className="w-full"
+                              disabled={deleteLoading}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <AlertDialogFooter className="gap-2 sm:gap-0">
+                      <AlertDialogCancel className="mt-0">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        type="submit"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        disabled={deleteLoading}
+                      >
+                        {deleteLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Deleting...
+                          </>
+                        ) : (
+                          "Delete Account"
+                        )}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </form>
+                </Form>
+              </AlertDialogContent>
+            </AlertDialog>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

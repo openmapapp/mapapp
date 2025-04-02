@@ -29,14 +29,6 @@ export const auth = betterAuth({
       enabled: true,
       requirePassword: true,
     },
-    additionalFields: {
-      trust: {
-        type: "number",
-        required: true,
-        default: 1,
-        input: false,
-      },
-    },
   },
   plugins: [username(), admin()],
 });

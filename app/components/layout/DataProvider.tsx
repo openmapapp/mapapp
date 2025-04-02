@@ -13,7 +13,8 @@ import { getGlobalSettings } from "@/actions/globalSettings";
 import { updateGlobalSettings } from "@/actions/adminActions";
 import { getReportTypes } from "@/actions/getReportTypes";
 import { getReports } from "@/actions/getReports";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import { set } from "zod";
 
 // Define types for global settings, reports, report types, and user settings
 interface GlobalSettings {
@@ -38,24 +39,61 @@ interface GlobalSettings {
 interface ReportType {
   id: number;
   name: string;
+  fields?: Record<string, any>;
 }
 
 interface Report {
   id: number;
   reportTypeId: number;
+  reportType?: ReportType;
   lat: number;
   long: number;
-  description: string | null;
+  description: string | null | Record<string, any>;
   image: string | null;
   createdAt: string; // Prisma usually returns ISO date strings
   updatedAt: string;
   departedAt: string | null;
   trustScore: number;
   submittedById: string;
+  submittedBy?: {
+    id: string;
+    username: string;
+  };
+  confirmationCount: number;
+  disconfirmationCount: number;
+  isVisible: boolean;
+  votes?: Vote[];
+}
+
+export interface Vote {
+  id: number;
+  value: number;
+  userId: string | null;
+  reportId: number;
+  createdAt: string;
 }
 
 interface UserSettings {
   theme: "light" | "dark";
+}
+
+// Define socket event types
+interface ServerToClientEvents {
+  "new-report": (data: Report) => void;
+  "report-deleted": (data: { reportId: number }) => void;
+  "report-updated": (data: { report: Report }) => void;
+  "report-voted": (data: { reportId: number; value: number }) => void;
+}
+
+interface ClientToServerEvents {
+  "report-delete": (data: { reportId: number }) => void;
+  "report-add": (data: Report) => void;
+  "report-update": (data: { report: Report }) => void;
+  "report-vote": (data: {
+    reportId: number;
+    userId: string;
+    value: number;
+  }) => void;
 }
 
 interface DataContextType {
@@ -68,22 +106,27 @@ interface DataContextType {
   setUserSettings: Dispatch<SetStateAction<UserSettings>>;
   timeRange: number;
   setTimeRange: Dispatch<SetStateAction<number>>;
+  refreshReports: () => Promise<void>;
 }
 
 // Provide default values for context (empty arrays, defaults for settings)
 const DataContext = createContext<DataContextType>({
   globalSettings: null,
-  updateSettings: async () => {}, // Temporary placeholder function
+  updateSettings: async () => {}, // placeholder function
   reportTypes: [],
   reports: [],
-  setReports: () => {}, // Temporary placeholder function
+  setReports: () => {}, // placeholder function
   userSettings: { theme: "light" },
-  setUserSettings: () => {}, // Temporary placeholder function
+  setUserSettings: () => {}, // placeholder function
   timeRange: 4,
-  setTimeRange: () => {}, // Temporary placeholder function
+  setTimeRange: () => {}, // placeholder function
+  refreshReports: async () => {}, // placeholder function
 });
 
-// Properly type the provider component
+// Type-safe socket instance
+let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
+
+// Provider component
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings | null>(
     null
@@ -94,6 +137,26 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [userSettings, setUserSettings] = useState<UserSettings>({
     theme: "light",
   });
+
+  // Initialize socket only once
+  useEffect(() => {
+    if (typeof window !== "undefined" && !socket) {
+      socket = io("http://localhost:3005", {
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+      });
+
+      console.log("Socket initialized");
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+        socket = null;
+      }
+    };
+  }, []);
 
   //Fetch global settings once
   useEffect(() => {
@@ -122,10 +185,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       setReportTypes(types);
     };
     fetchReportTypes();
+  }, []);
 
-    const socket = io("http://localhost:3005"); // Adjust to match your socket server URL
+  // Set up socket event listeners
+  useEffect(() => {
+    if (!socket) return;
 
-    socket.on("new-report", (data: Report) => {
+    const handleNewReport = (data: Report) => {
       setReports((prevReports) => {
         if (prevReports.some((r) => r.id === data.id)) {
           return prevReports;
@@ -150,65 +216,84 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           },
         ];
       });
-    });
+    };
 
-    socket.on("report-deleted", ({ reportId }: { reportId: number }) => {
-      setReports((prevReports) => prevReports.filter((r) => r.id !== reportId));
-    });
+    const handleReportDeleted = ({ reportId }: { reportId: number }) => {
+      setReports((prevReports) =>
+        prevReports.filter((report) => report.id !== reportId)
+      );
+    };
+
+    socket.on("new-report", handleNewReport);
+    socket.on("report-deleted", handleReportDeleted);
 
     return () => {
-      socket.off("new-report");
-      socket.off("report-deleted");
+      if (socket) {
+        socket.off("new-report", handleNewReport);
+        socket.off("report-deleted", handleReportDeleted);
+      }
     };
-  }, []);
+  }, [socket]);
 
+  // Manage time range from localStorage
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const storedTimeRange = localStorage.getItem("timeRange");
     if (storedTimeRange) {
       setTimeRange(Number(storedTimeRange));
     }
   }, []);
 
+  // Save timeRange changes to localStorage
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const serverReports = await getReports(timeRange);
+    if (typeof window === "undefined") return;
 
-        if (!serverReports || serverReports.length === 0) {
-          console.warn("⚠️ No reports found for the given time range.");
-          setReports([]);
-          return;
-        }
+    localStorage.setItem("timeRange", timeRange.toString());
+  }, [timeRange]);
 
-        // Convert Date objects to ISO strings
-        const formattedReports = serverReports.map((report) => ({
-          ...report,
-          createdAt:
-            report.createdAt instanceof Date
-              ? report.createdAt.toISOString()
-              : report.createdAt,
-          updatedAt:
-            report.updatedAt instanceof Date
-              ? report.updatedAt.toISOString()
-              : report.updatedAt,
-          departedAt:
-            report.departedAt instanceof Date
-              ? report.departedAt.toISOString()
-              : null,
-        }));
+  // Fetch reports based on time range
+  const fetchReports = async () => {
+    try {
+      const serverReports = await getReports(timeRange);
 
-        setReports(formattedReports);
-      } catch (error) {
-        console.error("❌ Error fetching reports:", error);
+      if (!serverReports || serverReports.length === 0) {
+        console.warn("⚠️ No reports found for the given time range.");
+        setReports([]);
+        return;
       }
-    };
+
+      // Convert Date objects to ISO strings
+      const formattedReports = serverReports.map((report) => ({
+        ...report,
+        createdAt:
+          report.createdAt instanceof Date
+            ? report.createdAt.toISOString()
+            : report.createdAt,
+        updatedAt:
+          report.updatedAt instanceof Date
+            ? report.updatedAt.toISOString()
+            : report.updatedAt,
+        departedAt:
+          report.departedAt instanceof Date
+            ? report.departedAt.toISOString()
+            : null,
+      }));
+
+      setReports(formattedReports);
+    } catch (error) {
+      console.error("❌ Error fetching reports:", error);
+    }
+  };
+
+  // Effect to fetch reports initially and at intervals
+  useEffect(() => {
     fetchReports();
-
-    const interval = setInterval(fetchReports, 120000); // Fetch reports two minutes
-
+    const interval = setInterval(fetchReports, 120000); // Fetch reports every two minutes
     return () => clearInterval(interval);
   }, [timeRange]);
 
+  // Function to update global settings
   const updateSettings = async (session: any, newSettings: GlobalSettings) => {
     try {
       await updateGlobalSettings(session, newSettings);
@@ -230,6 +315,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         setUserSettings,
         timeRange,
         setTimeRange,
+        refreshReports: fetchReports,
       }}
     >
       {children}
