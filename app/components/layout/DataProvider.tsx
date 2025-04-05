@@ -14,7 +14,6 @@ import { updateGlobalSettings } from "@/actions/adminActions";
 import { getReportTypes } from "@/actions/getReportTypes";
 import { getReports } from "@/actions/getReports";
 import { io, Socket } from "socket.io-client";
-import { set } from "zod";
 
 // Define types for global settings, reports, report types, and user settings
 interface GlobalSettings {
@@ -34,6 +33,8 @@ interface GlobalSettings {
   mapMaxZoom: number;
   mapMinZoom: number;
   mapApiKey: string;
+  aboutContent: string;
+  blogEnabled: boolean;
 }
 
 interface ReportType {

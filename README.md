@@ -111,7 +111,13 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [x] More role management tools (e.g., promote to mod)
 - [x] Bulk changes to user modifications on the admin panel
 - [x] Add filter/sort options to user table
+- [x] Add blog functionality with rich text editor and minimal CMS
+- [x] Add easily editable About page
 - [ ] Export historical map data as CSV (or other?)
+- [ ] Add Markers admin settings section so admin can set categories, pictures, and fields
+- [ ] Update schema to reflect difference between report item that has left vs incorrect report
+- [ ] Filter reports by type, etc.
+- [x] Add Activity updates pane
 
 ### UI
 
@@ -120,6 +126,7 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [x] Make sure "Home" button accessible in admin panel
 - [x] Make mobile friendly
 - [x] Make sure animations work for adding and removing pins, and on load. On load, pins should drop in staggered.
+- [ ] Fine tune WYSIWYG editor and about/blog UI
 
 ### Other
 

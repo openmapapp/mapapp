@@ -47,11 +47,13 @@ interface Report {
 interface ReportMarkersProps {
   setSelectedReport: (report: Report | null) => void;
   userId: string;
+  hoveredReportId: number | null;
 }
 
 export default function ReportMarkers({
   setSelectedReport,
   userId,
+  hoveredReportId,
 }: ReportMarkersProps) {
   const { reports } = useData();
   const { current: map } = useMap();
@@ -111,11 +113,13 @@ export default function ReportMarkers({
     isVerified,
     isConfirmed,
     isDisputed,
+    isHovered,
   }: {
     icon: any;
     isVerified: boolean;
     isConfirmed: boolean;
     isDisputed: boolean;
+    isHovered: boolean;
   }) => {
     // Determine status class
     const statusClass = isVerified
@@ -127,7 +131,11 @@ export default function ReportMarkers({
       : "map-pin-default";
 
     return (
-      <div className={`map-pin ${statusClass}`}>
+      <div
+        className={`map-pin ${statusClass} ${
+          isHovered ? "map-pin-hovered" : ""
+        }`}
+      >
         <div className="map-pin-head">
           <Image
             src={icon}
@@ -245,6 +253,9 @@ export default function ReportMarkers({
         const isConfirmed = report.confirmationCount >= 5;
         const isDisputed = report.disconfirmationCount >= 5;
 
+        //Check if this marker is being hovered over in the sidebar
+        const isHovered = hoveredReportId === report.id;
+
         // Parse description for tooltip
         let tooltip = "";
         try {
@@ -279,6 +290,7 @@ export default function ReportMarkers({
                 // Direct DOM event
                 handleMarkerClick(e, report);
               }
+              //data-report-id={report.id}; // Set data attribute for reference
               return false; // Explicitly return false to prevent default
             }}
           >
@@ -300,7 +312,9 @@ export default function ReportMarkers({
                         },
                       }}
                       exit={{ opacity: 0, y: -20, scale: 0.5 }}
-                      className="cursor-pointer"
+                      className={`cursor-pointer ${
+                        isHovered ? "z-10 filter drop-shadow-lg" : ""
+                      }`}
                     >
                       <CustomPinMarker
                         icon={iconSrc}

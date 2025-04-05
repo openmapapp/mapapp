@@ -1,9 +1,7 @@
 {
-  "/(pages)/admin/settings/page": "app/(pages)/admin/settings/page.js",
-  "/(pages)/sign-in/page": "app/(pages)/sign-in/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
   "/api/auth/[...all]/route": "app/api/auth/[...all]/route.js",
   "/api/global-settings/route": "app/api/global-settings/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/(pages)/sign-in/page": "app/(pages)/sign-in/page.js"
 }

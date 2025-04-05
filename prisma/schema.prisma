@@ -43,18 +43,19 @@ enum Role {
 }
 
 model user {
-  id            String    @id
+  id            String     @id
   name          String
-  email         String    @unique
+  email         String     @unique
   emailVerified Boolean
-  role          Role      @default(user)
-  createdAt     DateTime  @db.Timestamp(6)
-  updatedAt     DateTime  @db.Timestamp(6)
-  username      String?   @unique
+  role          Role       @default(user)
+  createdAt     DateTime   @db.Timestamp(6)
+  updatedAt     DateTime   @db.Timestamp(6)
+  username      String?    @unique
   account       account[]
   session       session[]
   report        Report[]
   vote          Vote[]
+  blogPosts     BlogPost[]
 }
 
 model verification {
@@ -82,6 +83,8 @@ model GlobalSettings {
   submitReportsOpen Boolean @default(false) // Can visitors submit reports?
   registrationMode  String  @default("open") // "open" or "invite-only"
   verifyPermission  String  @default("admin") // "admin" or "moderator"
+  aboutContent      String? @db.Text
+  blogEnabled       Boolean @default(false)
 }
 
 model InviteCode {
@@ -138,4 +141,28 @@ model Vote {
   reportId  Int
 
   @@unique([userId, reportId])
+}
+
+model BlogPost {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  content     String     @db.Text
+  excerpt     String?    @db.Text
+  published   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  publishedAt DateTime?
+  authorId    String
+  author      user       @relation(fields: [authorId], references: [id])
+  categories  Category[]
+
+  @@index([authorId])
+}
+
+model Category {
+  id    String     @id @default(cuid())
+  name  String     @unique
+  slug  String     @unique
+  posts BlogPost[]
 }

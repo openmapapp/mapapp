@@ -5,8 +5,11 @@ import { requireRole } from "@/app/lib/requireRole";
 import type { Session } from "@/app/lib/auth-client";
 
 // Update Global Settings
-export async function updateGlobalSettings(session: Session, updatedSettings) {
-  requireRole(session, "admin");
+export async function updateGlobalSettings(
+  session: Session,
+  updatedSettings: any
+) {
+  await requireRole(session, "admin");
 
   const { id, ...settingWithoutId } = updatedSettings;
 
@@ -18,7 +21,7 @@ export async function updateGlobalSettings(session: Session, updatedSettings) {
 
 // Fetch all users for admin panel user table
 export async function fetchUsers(session: Session) {
-  requireRole(session, "admin");
+  await requireRole(session, "admin");
 
   const users = await db.user.findMany({
     select: {
@@ -54,7 +57,7 @@ export async function updateUserRole(
   newRole: "user" | "moderator" | "admin"
 ) {
   try {
-    requireRole(adminSession, "admin"); // Restrict to admins only
+    await requireRole(adminSession, "admin"); // Restrict to admins only
 
     await db.user.update({
       where: { id: userId },
@@ -63,6 +66,7 @@ export async function updateUserRole(
 
     return { success: true };
   } catch (error) {
+    console.error("Error updating user role:", error);
     return { error: error };
   }
 }
@@ -70,12 +74,13 @@ export async function updateUserRole(
 // Delete user in admin panel
 export async function deleteUser(adminSession: Session, userId: string) {
   try {
-    requireRole(adminSession, "admin"); // Restrict to admins only
+    await requireRole(adminSession, "admin"); // Restrict to admins only
 
     await db.user.delete({ where: { id: userId } });
 
     return { success: true };
   } catch (error) {
+    console.error("Error deleting user:", error);
     return { error: error };
   }
 }

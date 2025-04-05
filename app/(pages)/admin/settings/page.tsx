@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useData } from "@/app/components/layout/DataProvider";
 import { useSession } from "@/app/lib/auth-client";
-import MapSettings from "@/app/components/settings/MapSettings";
-import AccessSettings from "@/app/components/settings/AccessSettings";
-import UserSettings from "@/app/components/settings/UserSettings";
+import MapSettings from "@/app/components/admin/settings/MapSettings";
+import AccessSettings from "@/app/components/admin/settings/AccessSettings";
+import UserSettings from "@/app/components/admin/settings/UserSettings";
 import {
   AdminSidebar,
   type AdminSectionId,
-} from "@/app/components/settings/AdminSidebar";
+} from "@/app/components/admin/settings/AdminSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";

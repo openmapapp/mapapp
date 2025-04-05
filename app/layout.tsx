@@ -74,7 +74,9 @@ export default function RootLayout({
             <DataProvider>
               <main className="flex flex-col min-h-screen max-w-full overflow-x-hidden">
                 <Navbar />
-                <div className="flex-1 w-full overflow-hidden">{children}</div>
+                <div className="flex-1 w-full flex justify-center overflow-hidden">
+                  {children}
+                </div>
                 <Toaster richColors position="top-center" closeButton />
               </main>
             </DataProvider>

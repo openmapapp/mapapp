@@ -211,6 +211,23 @@ export default function Navbar() {
         <Link href="/" className="font-semibold text-lg">
           MapApp
         </Link>
+        {globalSettings?.aboutContent !== null && (
+          <Link
+            href="/about"
+            className="ml-6 hidden sm:block text-sm text-muted-foreground hover:underline"
+          >
+            About
+          </Link>
+        )}
+        {globalSettings?.blogEnabled && (
+          /* Blog link - only show if blog is enabled */
+          <Link
+            href="/blog"
+            className="ml-6 hidden sm:block text-sm text-muted-foreground hover:underline"
+          >
+            Blog
+          </Link>
+        )}
       </div>
 
       <div className="flex gap-2 sm:gap-6 items-center">
