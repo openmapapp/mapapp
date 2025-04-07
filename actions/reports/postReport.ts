@@ -1,13 +1,12 @@
 "use server";
 
-import db from "../db";
+import db from "../../db";
 import { Prisma } from "@prisma/client";
 
 interface ReportPayload {
   latitude: number;
   longitude: number;
   reportTypeId: number;
-  trustScore: number;
   userId: string;
   description?: Record<string, string>;
 }
@@ -18,7 +17,6 @@ export async function postReport(payload: ReportPayload) {
       latitude,
       longitude,
       reportTypeId,
-      trustScore,
       userId,
       description = {},
     } = payload;
@@ -33,7 +31,7 @@ export async function postReport(payload: ReportPayload) {
           ? (description as Prisma.JsonObject)
           : Prisma.JsonNull,
         image: image ?? null,
-        trustScore,
+        trustScore: 1,
         submittedById: userId || null,
         reportTypeId,
       },

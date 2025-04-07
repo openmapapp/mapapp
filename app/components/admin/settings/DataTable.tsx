@@ -110,7 +110,7 @@ export function DataTable<TData, TValue>({
   }, [table, isMobile]);
 
   return (
-    <div className="w-full">
+    <div className="w-full p-6">
       {/* Table Controls */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between py-4 gap-2 px-2">
         {/* Search */}

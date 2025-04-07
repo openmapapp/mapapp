@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchUsers, deleteUser, updateUserRole } from "@/actions/adminActions";
+import {
+  fetchUsers,
+  deleteUser,
+  updateUserRole,
+} from "@/actions/admin/adminActions";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,

@@ -1,6 +1,6 @@
 "use server";
 
-import db from "../db";
+import db from "../../db";
 import type { Session } from "@/app/lib/auth-client";
 import { requireRole } from "@/app/lib/requireRole";
 

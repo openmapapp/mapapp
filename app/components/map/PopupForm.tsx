@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { postReport } from "@/actions/postReport";
-import { updateReport } from "@/actions/updateReport";
+import { postReport } from "@/actions/reports/postReport";
+import { updateReport } from "@/actions/reports/updateReport";
 import { useSession } from "@/app/lib/auth-client";
-import { useData } from "@/app/components/layout/DataProvider";
+import { useData } from "@/context/DataProvider";
 
 import { toast } from "sonner";
 import {
@@ -48,7 +48,7 @@ interface Report {
 interface ReportType {
   id: number;
   name: string;
-  fields: string[];
+  fields: string; // JSON string
 }
 
 interface PopupFormProps {
@@ -80,7 +80,6 @@ const PopupForm = ({
   const { data: session } = useSession();
 
   const userId = session?.user?.id || "";
-  const trustScore = session?.user?.trust || 1;
   const [loading, setLoading] = useState(false);
 
   // Initialize report data from existing report or defaults
@@ -124,7 +123,134 @@ const PopupForm = ({
   const selectedReport = reportTypes.find(
     (type) => String(type.id) === selectedReportType
   );
-  const availableFields = selectedReport?.fields || [];
+
+  // Parse the fields from the JSON string
+  const availableFields = useMemo(() => {
+    if (!selectedReport?.fields) return [];
+    try {
+      // Parse the JSON string from the database
+      const fieldsData = JSON.parse(selectedReport.fields);
+
+      // Handle both array of field objects and simple object formats
+      if (Array.isArray(fieldsData)) {
+        // New format: array of field objects with name, label, type, etc.
+        return fieldsData.map((field) => field.name);
+      } else {
+        // Legacy format: simple object with field names as keys
+        return Object.keys(fieldsData);
+      }
+    } catch (error) {
+      console.error("Error parsing fields:", error);
+      return [];
+    }
+  }, [selectedReport]);
+
+  // Update how field values are displayed in the form
+  const getFieldLabel = (fieldName: string): string => {
+    if (!selectedReport?.fields) return fieldName;
+
+    try {
+      const fieldsData = JSON.parse(selectedReport.fields);
+
+      if (Array.isArray(fieldsData)) {
+        // Find the field object that matches this name
+        const fieldData = fieldsData.find((f) => f.name === fieldName);
+        return fieldData?.label || fieldName;
+      } else {
+        // Legacy format - convert from snake_case to Title Case
+        return fieldName
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
+    } catch (error) {
+      return fieldName;
+    }
+  };
+
+  // Update the field rendering to use field types
+  const renderFieldInput = (fieldName: string, formField: any) => {
+    if (!selectedReport?.fields) {
+      // Default to text input if we can't determine field type
+      return (
+        <Input
+          {...formField}
+          placeholder={`Enter ${fieldName}...`}
+          className="text-sm"
+          disabled={loading}
+        />
+      );
+    }
+
+    try {
+      const fieldsData = JSON.parse(selectedReport.fields);
+      let fieldType = "text";
+      let fieldOptions: string[] = [];
+
+      if (Array.isArray(fieldsData)) {
+        // New format with field objects
+        const fieldData = fieldsData.find((f) => f.name === fieldName);
+        if (fieldData) {
+          fieldType = fieldData.type || "text";
+          fieldOptions = fieldData.options || [];
+        }
+      }
+
+      // Render the appropriate input based on field type
+      switch (fieldType) {
+        case "number":
+          return (
+            <Input
+              {...formField}
+              type="number"
+              placeholder={`Enter ${getFieldLabel(fieldName)}...`}
+              className="text-sm"
+              disabled={loading}
+            />
+          );
+        case "select":
+          return (
+            <Select
+              value={formField.value || ""}
+              onValueChange={formField.onChange}
+              disabled={loading}
+            >
+              <SelectTrigger className="text-sm">
+                <SelectValue
+                  placeholder={`Select ${getFieldLabel(fieldName)}`}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {fieldOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        default:
+          return (
+            <Input
+              {...formField}
+              placeholder={`Enter ${getFieldLabel(fieldName)}...`}
+              className="text-sm"
+              disabled={loading}
+            />
+          );
+      }
+    } catch (error) {
+      // Fallback to text input
+      return (
+        <Input
+          {...formField}
+          placeholder={`Enter ${fieldName}...`}
+          className="text-sm"
+          disabled={loading}
+        />
+      );
+    }
+  };
 
   // Set form values when existing report changes
   useEffect(() => {
@@ -175,7 +301,6 @@ const PopupForm = ({
         latitude,
         longitude,
         reportTypeId: Number(values.reportTypeId),
-        trustScore,
         userId: userId || null,
         description: JSON.stringify(values.dynamicFields || {}),
       };
@@ -226,6 +351,10 @@ const PopupForm = ({
     );
   }
 
+  // Remove the debug section that shows all report types
+  // This was causing issues in the UI
+  const showDebugInfo = false;
+
   return (
     <Form {...form}>
       <form
@@ -270,6 +399,22 @@ const PopupForm = ({
           )}
         />
 
+        {/* Debug info - hidden by default */}
+        {showDebugInfo && (
+          <div className="bg-muted p-2 rounded text-xs">
+            {reportTypes.map((typeFields) => (
+              <div className="mb-1" key={typeFields.id}>
+                <h4 className="font-medium">{typeFields.name}</h4>
+                <p className="text-muted-foreground truncate">
+                  {typeof typeFields.fields === "string"
+                    ? typeFields.fields
+                    : JSON.stringify(typeFields.fields)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Only show add field dropdown if there are available fields */}
         {availableFields.length > 0 && (
           <DropdownMenu>
@@ -288,7 +433,7 @@ const PopupForm = ({
                     onClick={() => addField(field)}
                     className="cursor-pointer"
                   >
-                    {field}
+                    {getFieldLabel(field)}
                   </DropdownMenuItem>
                 ))}
 
@@ -314,15 +459,12 @@ const PopupForm = ({
                 name={`dynamicFields.${field}`}
                 render={({ field: formField }) => (
                   <FormItem>
-                    <FormLabel className="text-sm">{field}</FormLabel>
+                    <FormLabel className="text-sm">
+                      {getFieldLabel(field)}
+                    </FormLabel>
                     <div className="flex gap-2 items-center">
                       <FormControl>
-                        <Input
-                          {...formField}
-                          placeholder={`Enter ${field}...`}
-                          className="text-sm"
-                          disabled={loading}
-                        />
+                        {renderFieldInput(field, formField)}
                       </FormControl>
                       <Button
                         type="button"
@@ -332,7 +474,7 @@ const PopupForm = ({
                         disabled={loading}
                         className="h-8 w-8"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-4 w-4" />
                         <span className="sr-only">Remove field</span>
                       </Button>
                     </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "@/app/lib/auth-client";
-import { generateInvite } from "@/actions/generateInvite";
+import { generateInvite } from "@/actions/admin/generateInvite";
 
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -222,7 +222,11 @@ export default function AccessSettings({
         </CardHeader>
         <CardContent>
           <div className="space-y-1">
-            {settingItems.map((setting) => renderSetting(setting))}
+            {settingItems.map((setting) => (
+              <div key={setting.id} className="py-2">
+                {renderSetting(setting)}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

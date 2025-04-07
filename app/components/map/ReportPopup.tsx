@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useData } from "@/app/components/layout/DataProvider";
-import { voteOnReport } from "@/actions/postVotes";
-import { getUserVotes } from "@/actions/getUserVote";
-import { verifyReport } from "@/actions/verifyReport";
+import { useData } from "@/context/DataProvider";
+import { voteOnReport } from "@/actions/reports/postVotes";
+import { getUserVotes } from "@/actions/reports/getUserVote";
+import { verifyReport } from "@/actions/reports/verifyReport";
 import type { Session } from "@/app/lib/auth-client";
 
 import { Popup } from "react-map-gl/maplibre";

@@ -1,7 +1,7 @@
 "use server";
 
-import db from "../db";
-import { getGlobalSettings } from "./globalSettings";
+import db from "../../db";
+import { getGlobalSettings } from "../admin/globalSettings";
 
 interface VotePayload {
   reportId: number;

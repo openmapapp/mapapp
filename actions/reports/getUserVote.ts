@@ -1,6 +1,6 @@
 "use server";
 
-import db from "../db";
+import db from "../../db";
 
 export async function getUserVotes(userId, reportId) {
   // Fetch the user's vote for this report.

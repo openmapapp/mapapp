@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
-import { fetchCategories } from "@/actions/blog";
+import { fetchCategories } from "@/actions/blog/blog";
 import BlogPostForm from "@/app/components/admin/BlogPostForm";
-import { getGlobalSettings } from "@/actions/globalSettings";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
 
 export default async function NewBlogPostPage() {
   const headersList = await headers();
@@ -29,7 +29,7 @@ export default async function NewBlogPostPage() {
   const categories = await fetchCategories();
 
   return (
-    <div className="container py-10">
+    <div className="container">
       <h1 className="text-2xl font-bold mb-6">Create New Blog Post</h1>
       <BlogPostForm session={session} categories={categories} />
     </div>

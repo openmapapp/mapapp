@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, Edit, Trash, Eye, Globe, EyeOff } from "lucide-react";
-import { deleteBlogPost, updateBlogPostStatus } from "@/actions/blog";
+import { deleteBlogPost, updateBlogPostStatus } from "@/actions/blog/blog";
 import type { Session } from "@/app/lib/auth-client";
 
 interface Author {

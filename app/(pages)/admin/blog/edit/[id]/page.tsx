@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
-import { fetchBlogPostById, fetchCategories } from "@/actions/blog";
+import { fetchBlogPostById, fetchCategories } from "@/actions/blog/blog";
 import BlogPostForm from "@/app/components/admin/BlogPostForm";
-import { getGlobalSettings } from "@/actions/globalSettings";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
 
 interface BlogPostPageProps {
   params: { id: string };
@@ -37,7 +37,7 @@ export default async function EditBlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <div className="container py-10">
+    <div className="container">
       <h1 className="text-2xl font-bold mb-6">Create New Blog Post</h1>
       <BlogPostForm session={session} post={post} categories={categories} />
     </div>

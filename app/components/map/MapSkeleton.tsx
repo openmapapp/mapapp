@@ -18,17 +18,6 @@ export default function MapSkeleton() {
           </div>
         </div>
 
-        {/* Markers simulating points on the map */}
-        <div className="absolute top-1/4 left-1/3">
-          <div className="h-3 w-3 rounded-full bg-primary"></div>
-        </div>
-        <div className="absolute top-2/3 left-1/2">
-          <div className="h-3 w-3 rounded-full bg-primary"></div>
-        </div>
-        <div className="absolute top-1/2 left-2/3">
-          <div className="h-3 w-3 rounded-full bg-primary"></div>
-        </div>
-
         {/* UI Control skeletons */}
         <div className="absolute top-3 left-7 h-10 w-10 rounded-md bg-white dark:bg-gray-900 shadow-md"></div>
         <div className="absolute top-4 right-4 h-32 w-10 rounded-md bg-white dark:bg-gray-900 shadow-md"></div>

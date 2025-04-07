@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
-import { fetchBlogPosts } from "@/actions/blog";
+import { fetchBlogPosts } from "@/actions/blog/blog";
 import BlogPostList from "@/app/components/admin/BlogPostList";
-import { getGlobalSettings } from "@/actions/globalSettings";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
 import Link from "next/link";
 
 export default async function AdminBlogPage() {
@@ -24,7 +24,7 @@ export default async function AdminBlogPage() {
 
   if (!settings?.blogEnabled) {
     return (
-      <div className="container py-10">
+      <div className="container">
         <h1 className="text-2xl font-bold mb-4">Blog Administration</h1>
         <div className="bg-yellow-100 p-4 rounded-md">
           <p>
@@ -39,7 +39,7 @@ export default async function AdminBlogPage() {
   const posts = await fetchBlogPosts(session);
 
   return (
-    <div className="container py-10">
+    <div className="container">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Blog Administration</h1>
         <Link

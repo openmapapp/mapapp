@@ -1,6 +1,6 @@
 "use server";
 
-import db from "../db";
+import db from "../../db";
 import { requireRole } from "@/app/lib/requireRole";
 
 export async function updateReport(reportId, updatedData, session) {

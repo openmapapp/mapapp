@@ -9,10 +9,10 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { getGlobalSettings } from "@/actions/globalSettings";
-import { updateGlobalSettings } from "@/actions/adminActions";
-import { getReportTypes } from "@/actions/getReportTypes";
-import { getReports } from "@/actions/getReports";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
+import { updateGlobalSettings } from "@/actions/admin/adminActions";
+import { getReportTypes } from "@/actions/reports/getReportTypes";
+import { getReports } from "@/actions/reports/getReports";
 import { io, Socket } from "socket.io-client";
 
 // Define types for global settings, reports, report types, and user settings

@@ -43,19 +43,27 @@ enum Role {
 }
 
 model user {
-  id            String     @id
-  name          String
-  email         String     @unique
-  emailVerified Boolean
-  role          Role       @default(user)
-  createdAt     DateTime   @db.Timestamp(6)
-  updatedAt     DateTime   @db.Timestamp(6)
-  username      String?    @unique
-  account       account[]
-  session       session[]
-  report        Report[]
-  vote          Vote[]
-  blogPosts     BlogPost[]
+  id              String   @id
+  name            String
+  email           String   @unique
+  emailVerified   Boolean
+  role            Role     @default(user)
+  createdAt       DateTime @db.Timestamp(6)
+  updatedAt       DateTime @db.Timestamp(6)
+  username        String?  @unique
+  displayUsername String?
+
+  // Relations
+  account   account[]
+  session   session[]
+  vote      Vote[]
+  blogPosts BlogPost[]
+
+  // Report relations
+  submittedReports   Report[]             @relation("ReportSubmitters")
+  verifiedReports    Report[]             @relation("ReportVerifiers")
+  reportedDepartures Report[]             @relation("DepartureReporters")
+  statusChanges      ReportStatusChange[]
 }
 
 model verification {
@@ -97,36 +105,85 @@ model InviteCode {
 }
 
 model Report {
-  id                   Int        @id @default(autoincrement())
-  reportType           ReportType @relation(fields: [reportTypeId], references: [id])
-  reportTypeId         Int
-  lat                  Float // Latitude coordinate
-  long                 Float // Longitude coordinate
-  description          Json? // Optional: extra details or description, ex. "Police are blocking the road", license plates, etc.
-  image                String? // Optional: URL to an image
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime?  @updatedAt
-  departedAt           DateTime? // Optional: time the entry left
+  id           Int        @id @default(autoincrement())
+  reportType   ReportType @relation(fields: [reportTypeId], references: [id])
+  reportTypeId Int
+  lat          Float // Latitude coordinate
+  long         Float // Longitude coordinate
+  description  Json? // Optional: extra details or description, ex. "Police are blocking the road", license plates, etc.
+  image        String? // Optional: URL to an image
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime?  @updatedAt
+
+  // Report status fields
+  isPermanent  Boolean      @default(false) // Whether the report is permanent
+  expiresAt    DateTime? // Optional: expiration date for the report
+  reportStatus ReportStatus @default(ACTIVE)
+  verifiedAt   DateTime? // Optional: time the report was verified
+  verifiedBy   user?        @relation("ReportVerifiers", fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedById String? // ID of the user who verified the report
+
+  // Item status fields
+  itemStatus            ItemStatus @default(PRESENT)
+  departedAt            DateTime? // When the item was reported as no longer present
+  departureReportedBy   user?      @relation("DepartureReporters", fields: [departureReportedById], references: [id], onDelete: SetNull)
+  departureReportedById String?
+
+  // Trust and reputation fields
   trustScore           Int //Set at creation of the report and tied to the user's trust score 
-  confirmationCount    Int        @default(0) // Number of times this report has been confirmed
-  disconfirmationCount Int        @default(0) // Number of times this report has been disconfirmed
-  isVisible            Boolean    @default(true) // Whether the report is visible to other users
-  isVerified           Boolean    @default(false) // Whether verified by admin/mod
-  // Who submitted the report
-  submittedBy          user?      @relation(fields: [submittedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  submittedById        String?
-  deletedUserId        String? // If the user is deleted, this will be set to the user's ID
-  // Votes on this report
-  votes                Vote[]
+  confirmationCount    Int     @default(0) // Number of times this report has been confirmed
+  disconfirmationCount Int     @default(0) // Number of times this report has been disconfirmed
+  isVisible            Boolean @default(true) // Whether the report is visible to other users
+
+  // Submitter relations
+  submittedBy   user?   @relation("ReportSubmitters", fields: [submittedById], references: [id], onDelete: SetNull)
+  submittedById String?
+  deletedUserId String? // If the user is deleted, this will be set to the user's ID
+
+  // Votes relation
+  votes Vote[]
+
+  // Status change
+  statusChanges ReportStatusChange[]
 }
 
 model ReportType {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  fields    Json // fields available for this report type
-  reports   Report[]
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String? // Optional description of the report type
+  fields      String // JSON string of field configurations
+  reports     Report[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model ReportStatusChange {
+  id                 Int          @id @default(autoincrement())
+  report             Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reportId           Int
+  previousStatus     ReportStatus
+  newStatus          ReportStatus
+  previousItemStatus ItemStatus
+  newItemStatus      ItemStatus
+  changedBy          user?        @relation(fields: [changedById], references: [id], onDelete: SetNull)
+  changedById        String?
+  deletedUserId      String? // If the user is deleted
+  reason             String? // Optional reason for the status change
+  createdAt          DateTime     @default(now())
+}
+
+enum ReportStatus {
+  ACTIVE // Report is current and valid
+  CONFIRMED // Report has been independently confirmed
+  DISPUTED // Report has conflicting confirmations/disconfirmations
+  RESOLVED // Issue reported is no longer present (e.g., road cleared)
+  INCORRECT // Report has been marked as incorrect information
+}
+
+enum ItemStatus {
+  PRESENT // The reported item/event is still present/happening
+  DEPARTED // The reported item has left or event has ended
+  UNKNOWN // Status cannot be determined
 }
 
 model Vote {

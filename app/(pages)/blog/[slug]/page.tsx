@@ -5,8 +5,8 @@ import { headers } from "next/headers";
 import {
   fetchBlogPostMetadataBySlug,
   fetchBlogPostBySlug,
-} from "@/actions/blog";
-import { getGlobalSettings } from "@/actions/globalSettings";
+} from "@/actions/blog/blog";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 

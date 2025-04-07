@@ -9,7 +9,7 @@ import SignInModal from "../auth/SignInModal";
 import SignUpModal from "../auth/SignUpModal";
 import { Button } from "@/components/ui/button";
 import SettingsModal from "../auth/SettingsModal";
-import { useData } from "@/app/components/layout/DataProvider";
+import { useData } from "@/context/DataProvider";
 import { Menu, X, Settings, User, LogOut, LogIn, UserPlus } from "lucide-react";
 import {
   Sheet,
@@ -71,7 +71,7 @@ export default function Navbar() {
         <SettingsModal />
         {isAdmin && (
           <Button variant="outline" asChild className="hidden sm:flex">
-            <Link href="/admin/settings">Admin</Link>
+            <Link href="/admin">Admin</Link>
           </Button>
         )}
         <SignOut />

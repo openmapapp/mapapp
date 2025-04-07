@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createBlogPost, updateBlogPost } from "@/actions/blog";
+import { createBlogPost, updateBlogPost } from "@/actions/blog/blog";
 import type { Session } from "@/app/lib/auth-client";
 
 interface Category {

@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { getAboutContent } from "@/actions/about";
+import { getAboutContent } from "@/actions/admin/about";
 
 export const metadata: Metadata = {
   title: "About Us",

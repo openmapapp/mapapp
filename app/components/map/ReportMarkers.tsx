@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Marker, useMap } from "react-map-gl/maplibre";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useData } from "@/app/components/layout/DataProvider";
+import { useData } from "@/context/DataProvider";
 import {
   Tooltip,
   TooltipContent,

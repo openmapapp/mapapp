@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useData } from "@/app/components/layout/DataProvider";
+import { useData } from "@/context/DataProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { validateInvite } from "@/actions/validateInvite";
+import { validateInvite } from "@/actions/admin/validateInvite";
 import { Loader2 } from "lucide-react";
 
 // Define form schema with proper typing

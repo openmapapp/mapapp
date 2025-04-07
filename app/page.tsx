@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, lazy, Suspense } from "react";
-import { useData } from "./components/layout/DataProvider";
+import { useData } from "../context/DataProvider";
 import { useSession } from "./lib/auth-client";
 import MapSkeleton from "./components/map/MapSkeleton";
-import { deleteReport } from "@/actions/deleteReport";
+import { deleteReport } from "@/actions/reports/deleteReport";
 import ReportSidebar from "./components/map/ReportSidebar";
 import dynamic from "next/dynamic";
 

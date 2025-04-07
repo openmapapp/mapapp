@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./components/layout/ThemeProvider";
-import { DataProvider } from "./components/layout/DataProvider";
-import { SocketProvider } from "./components/socketProvider";
+import { ThemeProvider } from "@/context/ThemeProvider";
+import { DataProvider } from "../context/DataProvider";
+import { SocketProvider } from "../context/SocketProvider";
 import Navbar from "./components/layout/Navbar";
 import { Toaster } from "@/components/ui/sonner";
 

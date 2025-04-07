@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LazyRichTextEditor } from "@/app/components/admin/LazyRichTextEditor";
 import { Button } from "@/components/ui/button";
-import { getAboutContent, updateAboutPage } from "@/actions/about";
+import { getAboutContent, updateAboutPage } from "@/actions/admin/about";
 import { useSession } from "@/app/lib/auth-client";
 import type { Session } from "@/app/lib/auth-client";
 
@@ -51,7 +51,7 @@ export default function AdminAboutPage() {
   }
 
   return (
-    <div className="container py-10">
+    <div className="container py-10 px-20">
       <h1 className="text-2xl font-bold mb-6">Edit About Page</h1>
 
       <div className="space-y-6">

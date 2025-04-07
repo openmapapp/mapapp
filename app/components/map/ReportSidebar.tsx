@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
-import { useData } from "@/app/components/layout/DataProvider";
+import { useData } from "@/context/DataProvider";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";

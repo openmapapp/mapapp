@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { getGlobalSettings } from "@/actions/globalSettings";
-import { fetchPublishedBlogPosts } from "@/actions/blog";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
+import { fetchPublishedBlogPosts } from "@/actions/blog/blog";
 import { formatDate } from "@/lib/utils";
 import { redirect } from "next/navigation";
 

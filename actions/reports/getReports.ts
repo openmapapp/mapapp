@@ -1,6 +1,6 @@
 "use server";
 
-import db from "../db";
+import db from "../../db";
 
 export async function getReports(timeRange: number = 4) {
   const cutoffTime = new Date();
