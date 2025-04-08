@@ -10,25 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-// Import marker icons
-import officer from "@/public/officer.png";
-import car from "@/public/car.png";
-import roadblock from "@/public/roadblock.png";
-import ice from "@/public/raid.png";
-import caution from "@/public/caution.png";
-import smoke from "@/public/smoke.png";
-import marker from "@/public/marker.png";
-
-// Map report types to their corresponding icons
-const reportTypeIcons: Record<number, any> = {
-  1: officer,
-  2: car,
-  3: roadblock,
-  4: ice,
-  5: caution,
-  6: smoke,
-};
+import { MapPin } from "lucide-react"; // Default fallback icon
 
 interface Report {
   id: number;
@@ -41,6 +23,11 @@ interface Report {
   confirmationCount: number;
   disconfirmationCount: number;
   createdAt: string;
+  reportType: {
+    id: number;
+    name: string;
+    iconUrl?: string;
+  };
   [key: string]: any;
 }
 
@@ -49,6 +36,9 @@ interface ReportMarkersProps {
   userId: string;
   hoveredReportId: number | null;
 }
+
+// Default marker icon path
+const DEFAULT_MARKER_ICON = "/marker.png";
 
 export default function ReportMarkers({
   setSelectedReport,
@@ -109,18 +99,22 @@ export default function ReportMarkers({
 
   // Custom pin marker component
   const CustomPinMarker = ({
-    icon,
-    isVerified,
-    isConfirmed,
-    isDisputed,
+    report,
     isHovered,
   }: {
-    icon: any;
-    isVerified: boolean;
-    isConfirmed: boolean;
-    isDisputed: boolean;
+    report: Report;
     isHovered: boolean;
   }) => {
+    // Get the icon source - use the iconUrl from the report type or fall back to default
+    const iconSrc = report.reportType?.iconUrl
+      ? report.reportType.iconUrl
+      : DEFAULT_MARKER_ICON;
+
+    // Determine marker status
+    const isVerified = report.reportStatus === "CONFIRMED";
+    const isConfirmed = report.confirmationCount >= 5;
+    const isDisputed = report.disconfirmationCount >= 5;
+
     // Determine status class
     const statusClass = isVerified
       ? "map-pin-verified"
@@ -137,13 +131,24 @@ export default function ReportMarkers({
         }`}
       >
         <div className="map-pin-head">
-          <Image
-            src={icon}
-            alt="Map marker"
-            width={32}
-            height={32}
-            className={isDisputed ? "opacity-60" : ""}
-          />
+          {iconSrc ? (
+            <Image
+              src={iconSrc}
+              alt={`${report.reportType?.name || "Marker"}`}
+              width={32}
+              height={32}
+              className={isDisputed ? "opacity-60" : ""}
+              onError={(e) => {
+                // Fallback if image fails to load
+                e.currentTarget.src = DEFAULT_MARKER_ICON;
+              }}
+            />
+          ) : (
+            // SVG fallback if no icon is available
+            <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-full">
+              <MapPin className="h-5 w-5 text-primary-foreground" />
+            </div>
+          )}
         </div>
         <div className="map-pin-needle" />
         <div className="map-pin-base" />
@@ -242,18 +247,10 @@ export default function ReportMarkers({
         // Skip removed markers
         if (report.isRemoving) return null;
 
-        // Determine which icon to use
-        const iconSrc = reportTypeIcons[report.reportTypeId] || marker;
-
         // Check if this is a new marker or part of initial load
         const isNew = newMarkers[report.id] || isInitialLoadRef.current;
 
-        // Determine marker status for styling
-        const isVerified = !!report.isVerified;
-        const isConfirmed = report.confirmationCount >= 5;
-        const isDisputed = report.disconfirmationCount >= 5;
-
-        //Check if this marker is being hovered over in the sidebar
+        // Check if this marker is being hovered over in the sidebar
         const isHovered = hoveredReportId === report.id;
 
         // Parse description for tooltip
@@ -290,7 +287,6 @@ export default function ReportMarkers({
                 // Direct DOM event
                 handleMarkerClick(e, report);
               }
-              //data-report-id={report.id}; // Set data attribute for reference
               return false; // Explicitly return false to prevent default
             }}
           >
@@ -316,12 +312,7 @@ export default function ReportMarkers({
                         isHovered ? "z-10 filter drop-shadow-lg" : ""
                       }`}
                     >
-                      <CustomPinMarker
-                        icon={iconSrc}
-                        isVerified={isVerified}
-                        isConfirmed={isConfirmed}
-                        isDisputed={isDisputed}
-                      />
+                      <CustomPinMarker report={report} isHovered={isHovered} />
                     </motion.div>
                   </div>
                 </TooltipTrigger>

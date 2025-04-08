@@ -37,6 +37,7 @@ import {
   saveReportType,
   deleteReportType,
 } from "@/actions/admin/reportTypes";
+import Image from "next/image";
 
 // Define types
 interface ReportType {
@@ -208,6 +209,7 @@ export default function ReportTypeSettings({
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Icon</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>Fields</TableHead>
@@ -218,6 +220,19 @@ export default function ReportTypeSettings({
                 {reportTypes.length > 0 ? (
                   reportTypes.map((reportType) => (
                     <TableRow key={reportType.id}>
+                      <TableCell>
+                        <Image
+                          src={
+                            reportType.iconUrl ||
+                            "/uploads/icons/default-marker.png"
+                          }
+                          alt={reportType.name}
+                          width={24}
+                          height={24}
+                          className="rounded-full"
+                          loading="lazy"
+                        />
+                      </TableCell>
                       <TableCell className="font-medium">
                         {reportType.name}
                       </TableCell>

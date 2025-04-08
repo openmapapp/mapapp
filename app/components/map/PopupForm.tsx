@@ -60,13 +60,14 @@ interface PopupFormProps {
   onClose: () => void;
 }
 
-// Define form schema
-const FormSchema = z.object({
+// Define base form schema
+const baseFormSchema = z.object({
   reportTypeId: z.string().min(1, "Please select a report type"),
   dynamicFields: z.record(z.string()).optional(),
 });
 
-type FormValues = z.infer<typeof FormSchema>;
+// TypeScript type for form values derived from schema
+type FormValues = z.infer<typeof baseFormSchema>;
 
 const PopupForm = ({
   latitude,
@@ -78,7 +79,6 @@ const PopupForm = ({
 }: PopupFormProps) => {
   const { reportTypes, globalSettings } = useData();
   const { data: session } = useSession();
-
   const userId = session?.user?.id || "";
   const [loading, setLoading] = useState(false);
 
@@ -108,17 +108,6 @@ const PopupForm = ({
     }
   });
 
-  // Initialize the form
-  const form = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      reportTypeId: reportData ? String(reportData.reportTypeId) : "",
-      dynamicFields: reportData?.description
-        ? JSON.parse(reportData.description)
-        : {},
-    },
-  });
-
   // Find the selected report type object
   const selectedReport = reportTypes.find(
     (type) => String(type.id) === selectedReportType
@@ -144,6 +133,77 @@ const PopupForm = ({
       return [];
     }
   }, [selectedReport]);
+
+  // Helper function to see if component is required
+  const isFieldRequired = (fieldName: string): boolean => {
+    if (!selectedReport?.fields) return false;
+    try {
+      const fieldsData = JSON.parse(selectedReport.fields);
+      if (Array.isArray(fieldsData)) {
+        const fieldData = fieldsData.find((f) => f.name === fieldName);
+        return fieldData?.required || false;
+      }
+    } catch (error) {
+      console.error("Error parsing fields:", error);
+    }
+    return false;
+  };
+
+  // Generate dynamic schema based on required fields
+  const getFormSchema = useMemo(() => {
+    if (!selectedReport?.fields) {
+      return baseFormSchema;
+    }
+
+    try {
+      const fieldsData = JSON.parse(selectedReport.fields);
+      let dynamicFieldsSchema: Record<string, any> = {};
+
+      if (Array.isArray(fieldsData)) {
+        // Process each field to build validation schema
+        fieldsData.forEach((field) => {
+          if (field.required) {
+            // For required fields, add validation
+            switch (field.type) {
+              case "number":
+                dynamicFieldsSchema[field.name] = z
+                  .string()
+                  .min(1, `${field.label} is required`);
+                break;
+              case "select":
+                dynamicFieldsSchema[field.name] = z
+                  .string()
+                  .min(1, `${field.label} is required`);
+                break;
+              default:
+                dynamicFieldsSchema[field.name] = z
+                  .string()
+                  .min(1, `${field.label} is required`);
+            }
+          }
+        });
+      }
+
+      // Extend the base schema with dynamic fields validation
+      return z.object({
+        reportTypeId: z.string().min(1, "Please select a report type"),
+        dynamicFields: z.object(dynamicFieldsSchema).partial(),
+      });
+    } catch (error) {
+      return baseFormSchema;
+    }
+  }, [selectedReport]);
+
+  // Initialize the form with the dynamic schema
+  const form = useForm<FormValues>({
+    resolver: zodResolver(getFormSchema),
+    defaultValues: {
+      reportTypeId: reportData ? String(reportData.reportTypeId) : "",
+      dynamicFields: reportData?.description
+        ? JSON.parse(reportData.description)
+        : {},
+    },
+  });
 
   // Update how field values are displayed in the form
   const getFieldLabel = (fieldName: string): string => {
@@ -186,6 +246,7 @@ const PopupForm = ({
       const fieldsData = JSON.parse(selectedReport.fields);
       let fieldType = "text";
       let fieldOptions: string[] = [];
+      let isRequired = false;
 
       if (Array.isArray(fieldsData)) {
         // New format with field objects
@@ -193,6 +254,7 @@ const PopupForm = ({
         if (fieldData) {
           fieldType = fieldData.type || "text";
           fieldOptions = fieldData.options || [];
+          isRequired = !!fieldData.required;
         }
       }
 
@@ -206,6 +268,7 @@ const PopupForm = ({
               placeholder={`Enter ${getFieldLabel(fieldName)}...`}
               className="text-sm"
               disabled={loading}
+              required={isRequired}
             />
           );
         case "select":
@@ -215,17 +278,25 @@ const PopupForm = ({
               onValueChange={formField.onChange}
               disabled={loading}
             >
-              <SelectTrigger className="text-sm">
+              <SelectTrigger
+                className={`text-sm ${isRequired ? "border-primary" : ""}`}
+              >
                 <SelectValue
                   placeholder={`Select ${getFieldLabel(fieldName)}`}
                 />
               </SelectTrigger>
               <SelectContent>
-                {fieldOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
+                {fieldOptions.length > 0 ? (
+                  fieldOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="" disabled>
+                    No options available
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
           );
@@ -234,13 +305,15 @@ const PopupForm = ({
             <Input
               {...formField}
               placeholder={`Enter ${getFieldLabel(fieldName)}...`}
-              className="text-sm"
+              className={`text-sm ${isRequired ? "border-primary" : ""}`}
               disabled={loading}
+              required={isRequired}
             />
           );
       }
     } catch (error) {
       // Fallback to text input
+      console.error("Error parsing field data:", error);
       return (
         <Input
           {...formField}
@@ -459,8 +532,11 @@ const PopupForm = ({
                 name={`dynamicFields.${field}`}
                 render={({ field: formField }) => (
                   <FormItem>
-                    <FormLabel className="text-sm">
+                    <FormLabel className="text-sm flex items-center gap-1">
                       {getFieldLabel(field)}
+                      {isFieldRequired(field) && (
+                        <span className="text-primary text-xs">*</span>
+                      )}
                     </FormLabel>
                     <div className="flex gap-2 items-center">
                       <FormControl>

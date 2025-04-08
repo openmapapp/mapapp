@@ -53,16 +53,44 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="access">Access</TabsTrigger>
-          <TabsTrigger value="map">Map</TabsTrigger>
-          <TabsTrigger value="reports">Report Fields</TabsTrigger>
-          <TabsTrigger value="blog">Blog</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
+        <TabsList className="mb-6 flex p-0 bg-transparent border border-border rounded-md overflow-hidden">
+          <TabsTrigger
+            value="access"
+            className="flex-1 py-2.5 px-4 rounded-none border-0 data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/50 hover:cursor-pointer transition-colors"
+          >
+            Access
+          </TabsTrigger>
+
+          <Separator orientation="vertical" className="h-6 my-auto" />
+
+          <TabsTrigger
+            value="map"
+            className="flex-1 py-2.5 px-4 rounded-none border-0 data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/50 hover:cursor-pointer transition-colors"
+          >
+            Map
+          </TabsTrigger>
+
+          <Separator orientation="vertical" className="h-6 my-auto" />
+
+          <TabsTrigger
+            value="reports"
+            className="flex-1 py-2.5 px-4 rounded-none border-0 data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/50 hover:cursor-pointer transition-colors"
+          >
+            Report Fields
+          </TabsTrigger>
+
+          <Separator orientation="vertical" className="h-6 my-auto" />
+
+          <TabsTrigger
+            value="users"
+            className="flex-1 py-2.5 px-4 rounded-none border-0 data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/50 hover:cursor-pointer transition-colors"
+          >
+            Users
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="access">
-          {newSettings && (
+          {session && (
             <AccessSettings
               newSettings={newSettings}
               setNewSettings={setNewSettings}
@@ -74,7 +102,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="map">
-          {newSettings && (
+          {session && (
             <MapSettings
               globalSettings={globalSettings}
               newSettings={newSettings}
@@ -86,17 +114,6 @@ export default function SettingsPage() {
 
         <TabsContent value="reports">
           {session && <ReportTypeSettings session={session} />}
-        </TabsContent>
-
-        <TabsContent value="blog">
-          {newSettings && (
-            <MapSettings
-              globalSettings={globalSettings}
-              newSettings={newSettings}
-              setNewSettings={setNewSettings}
-              handleSave={handleSave}
-            />
-          )}
         </TabsContent>
 
         <TabsContent value="users">

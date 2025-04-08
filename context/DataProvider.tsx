@@ -41,6 +41,8 @@ interface ReportType {
   id: number;
   name: string;
   fields?: Record<string, any>;
+  description?: string;
+  iconUrl?: string;
 }
 
 interface Report {
@@ -198,24 +200,46 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           return prevReports;
         }
 
-        return [
-          ...prevReports,
-          {
-            ...data,
-            createdAt:
-              data.createdAt instanceof Date
-                ? data.createdAt.toISOString()
-                : data.createdAt,
-            updatedAt:
-              data.updatedAt instanceof Date
-                ? data.updatedAt.toISOString()
-                : data.updatedAt,
-            departedAt:
-              data.departedAt instanceof Date
-                ? data.departedAt.toISOString()
-                : null,
-          },
-        ];
+        const processedReport = {
+          ...data,
+          createdAt:
+            data.createdAt instanceof Date
+              ? data.createdAt.toISOString()
+              : data.createdAt,
+          updatedAt:
+            data.updatedAt instanceof Date
+              ? data.updatedAt.toISOString()
+              : data.updatedAt,
+          departedAt:
+            data.departedAt instanceof Date
+              ? data.departedAt.toISOString()
+              : null,
+        };
+
+        // If the report doesn't have complete report type information,
+        // but we have its report type ID, look it up from our cached reportTypes
+        if (
+          processedReport.reportTypeId &&
+          (!processedReport.reportType || !processedReport.reportType.iconUrl)
+        ) {
+          // Find the matching report type from our previously fetched reportTypes
+          const matchingReportType = reportTypes.find(
+            (type) => type.id === Number(processedReport.reportTypeId)
+          );
+
+          if (matchingReportType) {
+            // Attach the complete report type information
+            processedReport.reportType = {
+              id: matchingReportType.id,
+              name: matchingReportType.name,
+              fields: matchingReportType.fields,
+              iconUrl: matchingReportType.iconUrl,
+              description: matchingReportType.description,
+            };
+          }
+        }
+
+        return [...prevReports, processedReport];
       });
     };
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useData } from "@/context/DataProvider";
 import { voteOnReport } from "@/actions/reports/postVotes";
 import { getUserVotes } from "@/actions/reports/getUserVote";
-import { verifyReport } from "@/actions/reports/verifyReport";
+import { confirmReport } from "@/actions/reports/confirmReport";
 import type { Session } from "@/app/lib/auth-client";
 
 import { Popup } from "react-map-gl/maplibre";
@@ -47,7 +47,7 @@ interface Report {
   disconfirmationCount: number;
   submittedById?: string;
   isVisible: boolean;
-  isVerified?: boolean; // New property for admin verification
+  reportStatus: "ACTIVE" | "CONFIRMED" | "DISPUTED" | "RESOLVED" | "INCORRECT"; // New property for admin verification
 }
 
 interface ReportPopupProps {
@@ -68,11 +68,38 @@ export default function ReportPopup({
   const { reportTypes, globalSettings } = useData();
   const [userVote, setUserVote] = useState<number | null>(null);
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({
-    verify: false,
+    confirm: false,
     edit: false,
     delete: false,
     vote: false,
   });
+
+  // Parse the description safely
+  const [parsedDescription, setParsedDescription] = useState<
+    Record<string, any>
+  >({});
+
+  // Parse description when selected report changes
+  useEffect(() => {
+    if (!selectedReport) return;
+
+    try {
+      // Check if description is already an object
+      if (
+        typeof selectedReport.description === "object" &&
+        selectedReport.description !== null
+      ) {
+        setParsedDescription(selectedReport.description);
+      }
+      // If it's a string, try to parse it
+      else if (typeof selectedReport.description === "string") {
+        setParsedDescription(JSON.parse(selectedReport.description));
+      }
+    } catch (error) {
+      console.error("Error parsing description:", error);
+      setParsedDescription({});
+    }
+  }, [selectedReport]);
 
   // Fetch user's vote for this report
   useEffect(() => {
@@ -103,11 +130,6 @@ export default function ReportPopup({
   // Return null if no report is selected
   if (!selectedReport) return null;
 
-  // Parse the description JSON
-  const parsedDescription = selectedReport.description
-    ? JSON.parse(selectedReport.description)
-    : {};
-
   // Find the report type from the available types
   const reportType = reportTypes.find(
     (type) => type.id === selectedReport.reportTypeId
@@ -117,8 +139,11 @@ export default function ReportPopup({
 
   // Determine the status of the report based on confirmation/disconfirmation counts
   const getStatus = () => {
-    if (selectedReport.isVerified) {
-      return { label: "Verified", color: "bg-primary text-primary-foreground" };
+    if (selectedReport.reportStatus === "CONFIRMED") {
+      return {
+        label: "Confirmed",
+        color: "bg-primary text-primary-foreground",
+      };
     }
     if (selectedReport.disconfirmationCount >= 5) {
       return {
@@ -166,41 +191,54 @@ export default function ReportPopup({
     }
   };
 
-  // Handle verifying a report (for admins/mods)
-  const handleVerify = async () => {
+  // Handle confirming a report (for admins/mods)
+  const handleConfirm = async () => {
     if (!selectedReport || !isAdminOrMod) return;
 
     try {
-      setLoading({ ...loading, verify: true });
+      setLoading({ ...loading, confirm: true });
+      let newConfirmationStatus = false;
 
       // Toggle the verification status
-      const newVerificationStatus = !selectedReport.isVerified;
+      if (selectedReport.reportStatus === "CONFIRMED") {
+        newConfirmationStatus = false;
+      } else {
+        newConfirmationStatus = true;
+      }
 
-      const response = await verifyReport(session, {
+      const response = await confirmReport(session, {
         reportId: selectedReport.id,
-        isVerified: newVerificationStatus,
+        isConfirmed: newConfirmationStatus,
       });
 
       if (response.success) {
         toast.success(
           `Report ${
-            newVerificationStatus ? "verified" : "unverified"
+            newConfirmationStatus ? "confirmed" : "disputed"
           } successfully`
         );
+
+        let updatedReportStatus = "ACTIVE";
+
+        if (newConfirmationStatus) {
+          updatedReportStatus = "CONFIRMED";
+        } else {
+          updatedReportStatus = "DISPUTED";
+        }
 
         // Update the selected report with the new verification status
         setSelectedReport({
           ...selectedReport,
-          isVerified: newVerificationStatus,
+          reportStatus: updatedReportStatus,
         });
       } else {
         toast.error(response.error || "Failed to update verification status");
       }
     } catch (error) {
-      console.error("Error verifying report:", error);
-      toast.error("An error occurred while updating verification status");
+      console.error("Error confirming report:", error);
+      toast.error("An error occurred while updating confirmation status");
     } finally {
-      setLoading({ ...loading, verify: false });
+      setLoading({ ...loading, confirm: false });
     }
   };
 
@@ -338,28 +376,28 @@ export default function ReportPopup({
               </Button>
             )}
 
-            {/* Verify button for admins/mods */}
+            {/* Confirm button for admins/mods */}
             {isAdminOrMod && (
               <Button
                 variant="outline"
                 size="sm"
                 className={`w-full flex items-center justify-center ${
-                  selectedReport.isVerified
+                  selectedReport.reportStatus === "CONFIRMED"
                     ? "bg-primary/20 text-primary hover:bg-primary/30"
                     : ""
                 }`}
-                onClick={handleVerify}
-                disabled={loading.verify}
+                onClick={handleConfirm}
+                disabled={loading.confirm}
               >
                 {selectedReport.isVerified ? (
                   <>
                     <ShieldAlert className="mr-2 h-4 w-4" />
-                    Unverify Report
+                    Dispute Report
                   </>
                 ) : (
                   <>
                     <Shield className="mr-2 h-4 w-4" />
-                    Verify Report
+                    Confirm Report
                   </>
                 )}
               </Button>

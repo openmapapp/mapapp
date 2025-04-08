@@ -96,6 +96,12 @@ export default function AccessSettings({
       description: "Allow visitors without accounts to vote on reports.",
       type: "toggle",
     },
+    {
+      id: "blogEnabled",
+      title: "Blog Feature",
+      description: "Enable or disable the blog feature.",
+      type: "toggle",
+    },
   ];
 
   if (!newSettings)

@@ -1,7 +1,7 @@
 // app/components/admin/settings/ReportTypeEditor.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Plus, GripVertical, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  GripVertical,
+  Trash2,
+  MapPinned,
+  Upload,
+} from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { v4 as uuidv4 } from "uuid";
+import { uploadReportIcon } from "@/actions/admin/uploadReportIcon";
+import { toast } from "sonner";
+import Image from "next/image";
+import FieldTypeSelect from "./FieldTypeSelect";
 
 // Field type for structured field definitions
 interface ReportField {
@@ -34,6 +46,7 @@ interface ReportType {
   name: string;
   description?: string;
   fields: string; // JSON string
+  iconUrl?: string;
 }
 
 interface ReportTypeEditorProps {
@@ -76,6 +89,61 @@ export default function ReportTypeEditor({
   const [name, setName] = useState(reportType.name || "");
   const [description, setDescription] = useState(reportType.description || "");
 
+  const [iconUrl, setIconUrl] = useState(reportType.iconUrl || "");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      const parsed = JSON.parse(reportType.fields || "[]");
+      const normalizedFields = Array.isArray(parsed)
+        ? parsed.map((field) => ({
+            ...field,
+            // Ensure type is always one of the valid options
+            type: ["text", "number", "select"].includes(field.type)
+              ? field.type
+              : "text",
+            id: field.id || uuidv4(),
+            name: field.name || "",
+            label: field.label || "",
+            required: Boolean(field.required),
+            order: typeof field.order === "number" ? field.order : 0,
+          }))
+        : [];
+
+      setFields(normalizedFields);
+    } catch (e) {
+      console.log("Error parsing fields:", e);
+      setFields([]);
+    }
+  }, [reportType.fields]);
+
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("icon", file);
+
+      const result = await uploadReportIcon(reportType.id, formData);
+
+      if (result.success) {
+        setIconUrl(result.iconUrl);
+        toast.success("Icon uploaded successfully");
+      } else {
+        toast.error(result.message || "Failed to upload icon");
+      }
+    } catch (error) {
+      console.error("Error uploading icon:", error);
+      toast.error("An error occurred while uploading the icon");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const addField = () => {
     const newField: ReportField = {
       id: uuidv4(),
@@ -98,6 +166,24 @@ export default function ReportTypeEditor({
         field.id === id ? { ...field, ...updates } : field
       )
     );
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = Array.from(fields);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update order property
+    const reorderedFields = items.map((item, index) => ({
+      ...item,
+      order: index,
+    }));
+
+    setFields(reorderedFields);
   };
 
   const handleSubmit = async () => {
@@ -137,26 +223,10 @@ export default function ReportTypeEditor({
       name,
       description,
       fields: JSON.stringify(sortedFields),
+      iconUrl,
     };
 
     await onSave(updatedReportType);
-  };
-
-  // Handle drag functionality (simplified without react-beautiful-dnd)
-  const moveField = (fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= fields.length) return;
-
-    const updatedFields = [...fields];
-    const [movedItem] = updatedFields.splice(fromIndex, 1);
-    updatedFields.splice(toIndex, 0, movedItem);
-
-    // Update order property
-    const reorderedFields = updatedFields.map((item, index) => ({
-      ...item,
-      order: index,
-    }));
-
-    setFields(reorderedFields);
   };
 
   return (
@@ -171,6 +241,57 @@ export default function ReportTypeEditor({
             placeholder="Enter report type name"
             disabled={isSubmitting}
           />
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <Label>Report Type Icon</Label>
+          <div className="flex items-center gap-4">
+            <div className="relative h-20 w-20 border rounded-md flex items-center justify-center bg-muted/50">
+              {iconUrl ? (
+                <Image
+                  src={iconUrl}
+                  alt="Report type icon"
+                  width={80}
+                  height={80}
+                  className="object-contain"
+                />
+              ) : (
+                <MapPinned className="h-10 w-10 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex-1 space-y-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/png"
+                className="hidden"
+                onChange={handleIconUpload}
+                disabled={isUploading || isSubmitting}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading || isSubmitting}
+                className="w-full"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Icon
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                PNG only. Max dimensions: 80×80px. Max size: 50KB.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -201,168 +322,160 @@ export default function ReportTypeEditor({
         </div>
 
         <div className="space-y-4">
-          {fields.map((field, index) => (
-            <Card key={field.id} className="relative">
-              <div className="absolute left-2 top-4 cursor-move flex flex-col gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 opacity-50 hover:opacity-100"
-                  onClick={() => moveField(index, index - 1)}
-                  disabled={index === 0 || isSubmitting}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="fields-list">
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="space-y-4"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 opacity-50 hover:opacity-100"
-                  onClick={() => moveField(index, index + 1)}
-                  disabled={index === fields.length - 1 || isSubmitting}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </Button>
-              </div>
-
-              <CardContent className="p-4 pl-10">
-                <div className="flex justify-between items-start mb-3">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Field {index + 1}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive"
-                    onClick={() => removeField(field.id)}
-                    disabled={isSubmitting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor={`field-name-${field.id}`}>Field Name</Label>
-                    <Input
-                      id={`field-name-${field.id}`}
-                      value={field.name}
-                      onChange={(e) =>
-                        updateField(field.id, { name: e.target.value })
-                      }
-                      placeholder="e.g. item_count"
-                      disabled={isSubmitting}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Technical name (no spaces, use snake_case)
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor={`field-label-${field.id}`}>
-                      Display Label
-                    </Label>
-                    <Input
-                      id={`field-label-${field.id}`}
-                      value={field.label}
-                      onChange={(e) =>
-                        updateField(field.id, { label: e.target.value })
-                      }
-                      placeholder="e.g. Item Count"
-                      disabled={isSubmitting}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Shown to users
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor={`field-type-${field.id}`}>Field Type</Label>
-                    <Select
-                      value={field.type}
-                      onValueChange={(value: any) =>
-                        updateField(field.id, { type: value })
-                      }
-                      disabled={isSubmitting}
+                  {fields.map((field, index) => (
+                    <Draggable
+                      key={field.id}
+                      draggableId={field.id}
+                      index={index}
                     >
-                      <SelectTrigger id={`field-type-${field.id}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="text">Text</SelectItem>
-                        <SelectItem value="number">Number</SelectItem>
-                        <SelectItem value="select">Dropdown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      {(provided, snapshot) => (
+                        <Card
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          style={{
+                            ...provided.draggableProps.style,
+                          }}
+                          className={`relative draggable ${
+                            snapshot.isDragging
+                              ? "border-primary ring-2 ring-primary/30"
+                              : ""
+                          }`}
+                        >
+                          <div
+                            {...provided.dragHandleProps}
+                            className="absolute left-2 top-4 cursor-grab h-10 flex items-center justify-center"
+                          >
+                            <GripVertical className="h-5 w-5 text-muted-foreground" />
+                          </div>
 
-                  <div className="flex items-end pb-2">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={field.required}
-                        onCheckedChange={(checked) =>
-                          updateField(field.id, { required: checked })
-                        }
-                        id={`required-${field.id}`}
-                        disabled={isSubmitting}
-                      />
-                      <Label htmlFor={`required-${field.id}`}>Required</Label>
-                    </div>
-                  </div>
+                          <CardContent className="p-4 pl-10">
+                            {/* Rest of your card content stays the same */}
+                            <div className="flex justify-between items-start mb-3">
+                              <span className="text-sm font-medium text-muted-foreground">
+                                Field {index + 1}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive"
+                                onClick={() => removeField(field.id)}
+                                disabled={isSubmitting}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor={`field-name-${field.id}`}>
+                                  Field Name
+                                </Label>
+                                <Input
+                                  id={`field-name-${field.id}`}
+                                  value={field.name}
+                                  onChange={(e) =>
+                                    updateField(field.id, {
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  placeholder="e.g. item_count"
+                                  disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  Technical name (no spaces, use snake_case)
+                                </p>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`field-label-${field.id}`}>
+                                  Display Label
+                                </Label>
+                                <Input
+                                  id={`field-label-${field.id}`}
+                                  value={field.label}
+                                  onChange={(e) =>
+                                    updateField(field.id, {
+                                      label: e.target.value,
+                                    })
+                                  }
+                                  placeholder="e.g. Item Count"
+                                  disabled={isSubmitting}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  Shown to users
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                              <div className="space-y-2">
+                                <FieldTypeSelect
+                                  fieldId={field.id}
+                                  value={field.type}
+                                  onChange={(value) => {
+                                    updateField(field.id, { type: value });
+                                  }}
+                                  disabled={isSubmitting}
+                                />
+                              </div>
+
+                              <div className="flex items-end pb-2">
+                                <div className="flex items-center space-x-2">
+                                  <Switch
+                                    checked={field.required}
+                                    onCheckedChange={(checked) =>
+                                      updateField(field.id, {
+                                        required: checked,
+                                      })
+                                    }
+                                    id={`required-${field.id}`}
+                                    disabled={isSubmitting}
+                                  />
+                                  <Label htmlFor={`required-${field.id}`}>
+                                    Required
+                                  </Label>
+                                </div>
+                              </div>
+                            </div>
+
+                            {field.type === "select" && (
+                              <div className="mt-4 space-y-2">
+                                <Label htmlFor={`field-options-${field.id}`}>
+                                  Options (comma separated)
+                                </Label>
+                                <Input
+                                  id={`field-options-${field.id}`}
+                                  value={field.options?.join(", ") || ""}
+                                  onChange={(e) => {
+                                    const options = e.target.value
+                                      .split(",")
+                                      .map((opt) => opt.trim())
+                                      .filter(Boolean);
+                                    updateField(field.id, { options });
+                                  }}
+                                  placeholder="Option 1, Option 2, Option 3"
+                                  disabled={isSubmitting}
+                                />
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
                 </div>
-
-                {field.type === "select" && (
-                  <div className="mt-4 space-y-2">
-                    <Label htmlFor={`field-options-${field.id}`}>
-                      Options (comma separated)
-                    </Label>
-                    <Input
-                      id={`field-options-${field.id}`}
-                      value={field.options?.join(", ") || ""}
-                      onChange={(e) => {
-                        const options = e.target.value
-                          .split(",")
-                          .map((opt) => opt.trim())
-                          .filter(Boolean);
-                        updateField(field.id, { options });
-                      }}
-                      placeholder="Option 1, Option 2, Option 3"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+              )}
+            </Droppable>
+          </DragDropContext>
 
           {fields.length === 0 && (
             <div className="text-center py-10 border rounded-md border-dashed">

@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.draggable {
+  top: auto !important;
+  left: auto !important;
+}
+
+.report-sidebar {
+  z-index: 9999 !important;
+}
+
 .map-pin-hovered {
   filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
   z-index: 10 !important;

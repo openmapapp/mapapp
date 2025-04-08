@@ -1,4 +1,3 @@
-// components/map/ReportSidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -116,7 +115,7 @@ export default function ReportSidebar({
   };
 
   return (
-    <div className="absolute right-0 top-0 h-full z-10 flex">
+    <div className="report-sidebar absolute right-0 top-0 h-full z-10 flex">
       {/* Collapsed/Expanded toggle button */}
       <div className="h-full flex items-center">
         <Button

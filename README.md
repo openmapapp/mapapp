@@ -114,8 +114,8 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [x] Add blog functionality with rich text editor and minimal CMS
 - [x] Add easily editable About page
 - [ ] Export historical map data as CSV (or other?)
-- [ ] Add Markers admin settings section so admin can set categories, pictures, and fields
-- [ ] Update schema to reflect difference between report item that has left vs incorrect report
+- [x] Add Markers admin settings section so admin can set categories, pictures, and fields
+- [x] Update schema to reflect difference between report item that has left vs incorrect report
 - [ ] Filter reports by type, etc.
 - [x] Add Activity updates pane
 
