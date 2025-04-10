@@ -151,11 +151,44 @@ model ReportType {
   id          Int       @id @default(autoincrement())
   name        String    @unique
   description String? // Optional description of the report type
-  fields      String // JSON string of field configurations
   iconUrl     String?
   reports     Report[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
+
+  reportTypeFields ReportTypeField[] // Relation to fields used in this report type
+}
+
+model FilterableField {
+  id          Int       @id @default(autoincrement())
+  fieldId     String    @unique // The common identifier (e.g., "location_type")
+  label       String // Human-readable label for the field
+  description String? // Optional description of the field
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  // Relation to report types that use this field
+  reportTypeFields ReportTypeField[]
+}
+
+model ReportTypeField {
+  id                Int              @id @default(autoincrement())
+  reportType        ReportType       @relation(fields: [reportTypeId], references: [id], onDelete: Cascade)
+  reportTypeId      Int
+  filterableField   FilterableField? @relation(fields: [filterableFieldId], references: [id], onDelete: SetNull)
+  filterableFieldId Int?
+
+  // Field properties
+  name      String // The name of the field (e.g., "location_type")
+  label     String // Human-readable label for the field
+  type      String // Type of the field (e.g., "text", "number", "select", "boolean")
+  options   String? // JSON string of options for select fields
+  required  Boolean   @default(false) // Is this field required?
+  order     Int       @default(0) // Order of the field in the report form
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([reportTypeId, name]) // Unique constraint on report type and field name
 }
 
 model ReportStatusChange {

@@ -1,20 +1,13 @@
-// app/components/admin/settings/ReportTypeEditor.tsx
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Loader2,
   Plus,
@@ -23,37 +16,54 @@ import {
   MapPinned,
   Upload,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { v4 as uuidv4 } from "uuid";
 import { uploadReportIcon } from "@/actions/admin/uploadReportIcon";
 import { toast } from "sonner";
 import Image from "next/image";
-import FieldTypeSelect from "./FieldTypeSelect";
+import {
+  getReportFields,
+  createReportField,
+} from "@/actions/admin/reportFields";
+import ReportFieldEditor from "./ReportFieldEditor";
 
 // Field type for structured field definitions
-interface ReportField {
+interface Field {
   id: string;
   name: string;
   label: string;
-  type: "text" | "number" | "select";
+  type: string;
   options?: string[];
   required: boolean;
+  filterable: boolean;
   order: number;
 }
 
-interface ReportType {
-  id: number;
-  name: string;
-  description?: string;
-  fields: string; // JSON string
-  iconUrl?: string;
-}
-
 interface ReportTypeEditorProps {
-  reportType: ReportType;
-  onSave: (reportType: ReportType) => Promise<void>;
+  reportType: {
+    id: number;
+    name: string;
+    description?: string;
+    fields: string; // JSON string of field configurations
+    iconUrl?: string;
+  };
+  onSave: (reportType: any) => Promise<void>;
   isSubmitting: boolean;
   onCancel: () => void;
+  onFieldCreated?: () => void;
 }
 
 export default function ReportTypeEditor({
@@ -61,9 +71,10 @@ export default function ReportTypeEditor({
   onSave,
   isSubmitting,
   onCancel,
+  onFieldCreated,
 }: ReportTypeEditorProps) {
   // Parse fields from JSON string
-  const [fields, setFields] = useState<ReportField[]>(() => {
+  const [fields, setFields] = useState<Field[]>(() => {
     try {
       const parsed = JSON.parse(reportType.fields || "[]");
       if (Array.isArray(parsed)) return parsed;
@@ -76,6 +87,7 @@ export default function ReportTypeEditor({
           label: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " "),
           type: "text",
           required: false,
+          filterable: false,
           order: index,
         }));
       }
@@ -86,37 +98,36 @@ export default function ReportTypeEditor({
     }
   });
 
+  const [availableFields, setAvailableFields] = useState<any[]>([]);
   const [name, setName] = useState(reportType.name || "");
   const [description, setDescription] = useState(reportType.description || "");
-
   const [iconUrl, setIconUrl] = useState(reportType.iconUrl || "");
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fieldEditorOpen, setFieldEditorOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  // Load available fields when component mounts
+  const fetchFields = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const parsed = JSON.parse(reportType.fields || "[]");
-      const normalizedFields = Array.isArray(parsed)
-        ? parsed.map((field) => ({
-            ...field,
-            // Ensure type is always one of the valid options
-            type: ["text", "number", "select"].includes(field.type)
-              ? field.type
-              : "text",
-            id: field.id || uuidv4(),
-            name: field.name || "",
-            label: field.label || "",
-            required: Boolean(field.required),
-            order: typeof field.order === "number" ? field.order : 0,
-          }))
-        : [];
-
-      setFields(normalizedFields);
-    } catch (e) {
-      console.log("Error parsing fields:", e);
-      setFields([]);
+      const response = await getReportFields();
+      if (response.success) {
+        setAvailableFields(response.data);
+      } else {
+        toast.error("Failed to load available fields");
+      }
+    } catch (error) {
+      console.error("Error loading fields:", error);
+      toast.error("An error occurred while loading fields");
+    } finally {
+      setIsLoading(false);
     }
-  }, [reportType.fields]);
+  }, []);
+
+  useEffect(() => {
+    fetchFields();
+  }, [fetchFields]);
 
   const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -145,12 +156,13 @@ export default function ReportTypeEditor({
   };
 
   const addField = () => {
-    const newField: ReportField = {
+    const newField: Field = {
       id: uuidv4(),
       name: "",
       label: "",
       type: "text",
       required: false,
+      filterable: false,
       order: fields.length,
     };
     setFields([...fields, newField]);
@@ -160,12 +172,29 @@ export default function ReportTypeEditor({
     setFields(fields.filter((field) => field.id !== id));
   };
 
-  const updateField = (id: string, updates: Partial<ReportField>) => {
+  const updateField = (id: string, updates: Partial<Field>) => {
     setFields(
       fields.map((field) =>
         field.id === id ? { ...field, ...updates } : field
       )
     );
+  };
+
+  // Function to handle field selection from dropdown
+  const handleSelectField = (selectedField) => {
+    // Create a new field based on the selected field
+    const newField: Field = {
+      id: uuidv4(),
+      name: selectedField.name,
+      label: selectedField.label,
+      type: selectedField.type || "text",
+      options: selectedField.options || [],
+      required: false,
+      filterable: selectedField.filterable || false,
+      order: fields.length,
+    };
+
+    setFields([...fields, newField]);
   };
 
   const onDragEnd = (result) => {
@@ -189,18 +218,18 @@ export default function ReportTypeEditor({
   const handleSubmit = async () => {
     // Validate
     if (!name.trim()) {
-      alert("Report type name is required");
+      toast.error("Report type name is required");
       return;
     }
 
     // Validate field names
     for (const field of fields) {
       if (!field.name.trim()) {
-        alert("All fields must have a name");
+        toast.error("All fields must have a name");
         return;
       }
 
-      // Convert field names to snake_case
+      // Convert field names to snake_case if they're not already
       field.name = field.name
         .toLowerCase()
         .replace(/\s+/g, "_")
@@ -307,20 +336,46 @@ export default function ReportTypeEditor({
         </div>
       </div>
 
+      {/* Fields section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Label>Fields</Label>
-          <Button
-            onClick={addField}
-            size="sm"
-            variant="outline"
-            disabled={isSubmitting}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Field
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setFieldEditorOpen(true)}
+              size="sm"
+              variant="outline"
+              disabled={isSubmitting}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create New Field
+            </Button>
+
+            {/* Dropdown to select from existing fields */}
+            <Select
+              onValueChange={(value) => {
+                const field = availableFields.find((f) => f.name === value);
+                if (field) handleSelectField(field);
+              }}
+              disabled={
+                isSubmitting || isLoading || availableFields.length === 0
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Add existing field" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableFields.map((field) => (
+                  <SelectItem key={field.name} value={field.name}>
+                    {field.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
+        {/* Draggable fields list */}
         <div className="space-y-4">
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="fields-list">
@@ -357,7 +412,6 @@ export default function ReportTypeEditor({
                           </div>
 
                           <CardContent className="p-4 pl-10">
-                            {/* Rest of your card content stays the same */}
                             <div className="flex justify-between items-start mb-3">
                               <span className="text-sm font-medium text-muted-foreground">
                                 Field {index + 1}
@@ -374,60 +428,25 @@ export default function ReportTypeEditor({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor={`field-name-${field.id}`}>
-                                  Field Name
+                              <div>
+                                <Label className="font-medium">
+                                  {field.label || "Unnamed Field"}
                                 </Label>
-                                <Input
-                                  id={`field-name-${field.id}`}
-                                  value={field.name}
-                                  onChange={(e) =>
-                                    updateField(field.id, {
-                                      name: e.target.value,
-                                    })
-                                  }
-                                  placeholder="e.g. item_count"
-                                  disabled={isSubmitting}
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                  Technical name (no spaces, use snake_case)
+                                {field.filterable && (
+                                  <Badge variant="outline" className="ml-2">
+                                    Filterable
+                                  </Badge>
+                                )}
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {field.type === "select"
+                                    ? `Select field with options: ${
+                                        field.options?.join(", ") || "none"
+                                      }`
+                                    : `${field.type} field`}
                                 </p>
                               </div>
 
-                              <div className="space-y-2">
-                                <Label htmlFor={`field-label-${field.id}`}>
-                                  Display Label
-                                </Label>
-                                <Input
-                                  id={`field-label-${field.id}`}
-                                  value={field.label}
-                                  onChange={(e) =>
-                                    updateField(field.id, {
-                                      label: e.target.value,
-                                    })
-                                  }
-                                  placeholder="e.g. Item Count"
-                                  disabled={isSubmitting}
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                  Shown to users
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                              <div className="space-y-2">
-                                <FieldTypeSelect
-                                  fieldId={field.id}
-                                  value={field.type}
-                                  onChange={(value) => {
-                                    updateField(field.id, { type: value });
-                                  }}
-                                  disabled={isSubmitting}
-                                />
-                              </div>
-
-                              <div className="flex items-end pb-2">
+                              <div className="flex items-center justify-end space-x-4">
                                 <div className="flex items-center space-x-2">
                                   <Switch
                                     checked={field.required}
@@ -443,29 +462,12 @@ export default function ReportTypeEditor({
                                     Required
                                   </Label>
                                 </div>
+
+                                {field.filterable && (
+                                  <Badge variant="secondary">Filterable</Badge>
+                                )}
                               </div>
                             </div>
-
-                            {field.type === "select" && (
-                              <div className="mt-4 space-y-2">
-                                <Label htmlFor={`field-options-${field.id}`}>
-                                  Options (comma separated)
-                                </Label>
-                                <Input
-                                  id={`field-options-${field.id}`}
-                                  value={field.options?.join(", ") || ""}
-                                  onChange={(e) => {
-                                    const options = e.target.value
-                                      .split(",")
-                                      .map((opt) => opt.trim())
-                                      .filter(Boolean);
-                                    updateField(field.id, { options });
-                                  }}
-                                  placeholder="Option 1, Option 2, Option 3"
-                                  disabled={isSubmitting}
-                                />
-                              </div>
-                            )}
                           </CardContent>
                         </Card>
                       )}
@@ -480,20 +482,16 @@ export default function ReportTypeEditor({
           {fields.length === 0 && (
             <div className="text-center py-10 border rounded-md border-dashed">
               <p className="text-muted-foreground">No fields added yet</p>
-              <Button
-                onClick={addField}
-                variant="ghost"
-                className="mt-2"
-                disabled={isSubmitting}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Field
-              </Button>
+              <p className="text-sm text-muted-foreground mt-2">
+                Add fields to define what information users can submit for this
+                report type
+              </p>
             </div>
           )}
         </div>
       </div>
 
+      {/* Submit and Cancel buttons */}
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
@@ -509,6 +507,69 @@ export default function ReportTypeEditor({
           )}
         </Button>
       </div>
+
+      {/* Field editor dialog */}
+      <Dialog open={fieldEditorOpen} onOpenChange={setFieldEditorOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Field</DialogTitle>
+          </DialogHeader>
+          <ReportFieldEditor
+            field={{}}
+            onSave={async (fieldData) => {
+              setIsLoading(true);
+              try {
+                // Create the field with the new createReportField function
+                const result = await createReportField({
+                  name: fieldData.name,
+                  label: fieldData.label,
+                  type: fieldData.type || "text",
+                  options: fieldData.options || [],
+                  required: fieldData.required || false,
+                  filterable: fieldData.filterable !== false,
+                  reportTypeIds: [reportType.id], // Associate with current report type
+                });
+
+                if (result.success) {
+                  // Refresh available fields
+                  await fetchFields();
+
+                  // Create a new field in this report type
+                  const newField: Field = {
+                    id: uuidv4(),
+                    name: fieldData.name,
+                    label: fieldData.label,
+                    type: fieldData.type || "text",
+                    options: fieldData.options || [],
+                    required: fieldData.required || false,
+                    filterable: fieldData.filterable !== false,
+                    order: fields.length,
+                  };
+
+                  setFields([...fields, newField]);
+
+                  toast.success("Field created successfully");
+                  setFieldEditorOpen(false);
+
+                  // Notify parent if needed
+                  if (onFieldCreated) {
+                    onFieldCreated();
+                  }
+                } else {
+                  toast.error(result.message || "Failed to create field");
+                }
+              } catch (error) {
+                console.error("Error creating field:", error);
+                toast.error("An error occurred while creating the field");
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            isSubmitting={isLoading}
+            onCancel={() => setFieldEditorOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -5,13 +5,13 @@ import { useState } from "react";
 import { useData } from "@/context/DataProvider";
 import { useSession } from "@/app/lib/auth-client";
 import MapSettings from "@/app/components/admin/settings/MapSettings";
-import AccessSettings from "@/app/components/admin/settings/AccessSettings";
+import GeneralSettings from "@/app/components/admin/settings/GeneralSettings";
 import UserSettings from "@/app/components/admin/settings/UserSettings";
+import ReportSettings from "@/app/components/admin/settings/ReportSettings";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ReportTypeSettings from "@/app/components/admin/settings/ReportTypeSettings";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -76,7 +76,7 @@ export default function SettingsPage() {
             value="reports"
             className="flex-1 py-2.5 px-4 rounded-none border-0 data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/50 hover:cursor-pointer transition-colors"
           >
-            Report Fields
+            Reports
           </TabsTrigger>
 
           <Separator orientation="vertical" className="h-6 my-auto" />
@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
         <TabsContent value="access">
           {session && (
-            <AccessSettings
+            <GeneralSettings
               newSettings={newSettings}
               setNewSettings={setNewSettings}
               globalSettings={globalSettings}
@@ -113,7 +113,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="reports">
-          {session && <ReportTypeSettings session={session} />}
+          {session && <ReportSettings session={session} />}
         </TabsContent>
 
         <TabsContent value="users">

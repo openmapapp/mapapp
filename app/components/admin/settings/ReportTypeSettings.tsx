@@ -1,7 +1,7 @@
 // app/components/admin/settings/ReportTypeSettings.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,34 +54,42 @@ interface ReportTypeSettingsProps {
 export default function ReportTypeSettings({
   session,
 }: ReportTypeSettingsProps) {
-  const [reportTypes, setReportTypes] = useState<ReportType[]>([]);
+  const [reportTypes, setReportTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedReportType, setSelectedReportType] =
-    useState<ReportType | null>(null);
+  const [selectedReportType, setSelectedReportType] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load report types on mount
-  useEffect(() => {
-    const fetchReportTypes = async () => {
-      try {
-        const result = await getReportTypes();
-        if (result.success) {
-          setReportTypes(result.data);
-        } else {
-          toast.error(result.message || "Failed to load report types");
-        }
-      } catch (error) {
-        console.error("Error fetching report types:", error);
-        toast.error("An error occurred while loading report types");
-      } finally {
-        setLoading(false);
+  // Create a fetchReportTypes function that can be called anytime we need to refresh
+  const fetchReportTypes = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await getReportTypes();
+      if (result.success) {
+        setReportTypes(result.data);
+      } else {
+        toast.error(result.message || "Failed to load report types");
       }
-    };
-
-    fetchReportTypes();
+    } catch (error) {
+      console.error("Error fetching report types:", error);
+      toast.error("An error occurred while loading report types");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Load report types on mount and when specific actions take place
+  useEffect(() => {
+    fetchReportTypes();
+
+    // Set up an interval to refresh data periodically
+    const refreshInterval = setInterval(() => {
+      fetchReportTypes();
+    }, 60000); // Refresh every minute
+
+    return () => clearInterval(refreshInterval);
+  }, [fetchReportTypes]);
 
   // Handle creating a new report type
   const handleCreateNew = () => {
@@ -95,31 +103,20 @@ export default function ReportTypeSettings({
   };
 
   // Handle editing an existing report type
-  const handleEdit = (reportType: ReportType) => {
+  const handleEdit = (reportType) => {
     setSelectedReportType(reportType);
     setEditorOpen(true);
   };
 
   // Handle saving a report type
-  const handleSave = async (reportType: ReportType) => {
+  const handleSave = async (reportType) => {
     setIsSubmitting(true);
     try {
       const result = await saveReportType(reportType);
 
       if (result.success) {
-        // Update local state
-        if (reportType.id) {
-          // Updating existing
-          setReportTypes(
-            reportTypes.map((rt) => (rt.id === reportType.id ? reportType : rt))
-          );
-        } else {
-          // Adding new with the returned ID
-          setReportTypes([
-            ...reportTypes,
-            { ...reportType, id: result.data.id },
-          ]);
-        }
+        // Refresh all data
+        await fetchReportTypes();
 
         toast.success(
           reportType.id ? "Report type updated" : "Report type created"
@@ -138,7 +135,7 @@ export default function ReportTypeSettings({
   };
 
   // Prepare to delete a report type
-  const handleDeleteClick = (reportType: ReportType) => {
+  const handleDeleteClick = (reportType) => {
     setSelectedReportType(reportType);
     setDeleteDialogOpen(true);
   };
@@ -152,9 +149,9 @@ export default function ReportTypeSettings({
       const result = await deleteReportType(selectedReportType.id);
 
       if (result.success) {
-        setReportTypes(
-          reportTypes.filter((rt) => rt.id !== selectedReportType.id)
-        );
+        // Refresh all data
+        await fetchReportTypes();
+
         toast.success("Report type deleted");
       } else {
         toast.error(result.message || "Failed to delete report type");
@@ -170,7 +167,7 @@ export default function ReportTypeSettings({
   };
 
   // Get field count for each report type
-  const getFieldCount = (fieldsJson: string): number => {
+  const getFieldCount = (fieldsJson) => {
     try {
       const fields = JSON.parse(fieldsJson);
       if (Array.isArray(fields)) return fields.length;
@@ -282,8 +279,19 @@ export default function ReportTypeSettings({
       </Card>
 
       {/* Report Type Editor Dialog */}
-      <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <Dialog
+        open={editorOpen}
+        onOpenChange={(open) => {
+          // Only allow closing via the Cancel button or X button
+          if (open === false && !isSubmitting) {
+            setEditorOpen(false);
+          }
+        }}
+      >
+        <DialogContent
+          className="max-w-3xl max-h-[90vh] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <DialogHeader>
             <DialogTitle>
               {selectedReportType?.id

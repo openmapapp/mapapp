@@ -45,9 +45,12 @@ export default function ReportMarkers({
   userId,
   hoveredReportId,
 }: ReportMarkersProps) {
-  const { reports } = useData();
+  const { reports, filteredReports, filters } = useData();
   const { current: map } = useMap();
   const [newMarkers, setNewMarkers] = useState<Record<number, boolean>>({});
+
+  // Use filtered reports if filters are applied, otherwise use all reports
+  const displayReports = filters.isFiltering ? filteredReports : reports;
 
   // Use ref to track previous reports for comparison
   const prevReportsRef = useRef<number[]>([]);
@@ -70,10 +73,10 @@ export default function ReportMarkers({
   // Track new markers - use simpler approach to avoid infinite loop
   useEffect(() => {
     // Skip if no reports
-    if (!reports || reports.length === 0) return;
+    if (!displayReports || displayReports.length === 0) return;
 
     // Check for new markers by comparing with previously tracked report IDs
-    const currentReportIds = reports.map((r) => r.id);
+    const currentReportIds = displayReports.map((r) => r.id);
     const newMarkersFound: Record<number, boolean> = {};
 
     // Find reports that weren't in the previous set
@@ -92,10 +95,27 @@ export default function ReportMarkers({
     prevReportsRef.current = currentReportIds;
 
     // Set initial load to false after first render with reports
-    if (isInitialLoadRef.current && reports.length > 0) {
+    if (isInitialLoadRef.current && displayReports.length > 0) {
       isInitialLoadRef.current = false;
     }
-  }, [reports]);
+  }, [displayReports]);
+
+  // Reset initial load state when filters change
+  useEffect(() => {
+    if (filters.isFiltering) {
+      // When filters are applied, briefly set initialLoad to true for animation
+      isInitialLoadRef.current = true;
+
+      // Reset after a short delay
+      const timer = setTimeout(() => {
+        if (displayReports.length > 0) {
+          isInitialLoadRef.current = false;
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [filters.isFiltering, displayReports.length]);
 
   // Custom pin marker component
   const CustomPinMarker = ({
@@ -243,9 +263,9 @@ export default function ReportMarkers({
 
   return (
     <AnimatePresence>
-      {reports.map((report, index) => {
-        // Skip removed markers
-        if (report.isRemoving) return null;
+      {displayReports.map((report, index) => {
+        // Skip removed markers or reports without valid coordinates
+        if (report.isRemoving || !report.lat || !report.long) return null;
 
         // Check if this is a new marker or part of initial load
         const isNew = newMarkers[report.id] || isInitialLoadRef.current;
@@ -257,7 +277,11 @@ export default function ReportMarkers({
         let tooltip = "";
         try {
           if (report.description) {
-            const desc = JSON.parse(report.description);
+            const desc =
+              typeof report.description === "string"
+                ? JSON.parse(report.description)
+                : report.description;
+
             // Take the first non-empty field for the tooltip
             const firstField = Object.entries(desc).find(
               ([_, value]) => value && String(value).trim() !== ""

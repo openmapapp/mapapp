@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 // Define prop types
-interface AccessSettingsProps {
+interface GeneralSettingsProps {
   newSettings: any;
   setNewSettings: (settings: any) => void;
   globalSettings: any;
@@ -51,13 +51,13 @@ interface SettingItem {
   options?: { value: string; label: string }[];
 }
 
-export default function AccessSettings({
+export default function GeneralSettings({
   newSettings,
   setNewSettings,
   globalSettings,
   updating,
   handleSave,
-}: AccessSettingsProps) {
+}: GeneralSettingsProps) {
   const [inviteLink, setInviteLink] = useState<string>("");
   const [generating, setGenerating] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -213,9 +213,10 @@ export default function AccessSettings({
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <h2 className="text-xl font-bold">Access Settings</h2>
+        <h2 className="text-xl font-bold">General Settings</h2>
         <p className="text-muted-foreground">
-          Control who can access, view, and contribute to your map.
+          Control website features and who can access, view, and contribute to
+          your map.
         </p>
       </div>
 

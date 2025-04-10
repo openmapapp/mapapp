@@ -6,7 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/app/lib/auth-client";
 import { useSession } from "@/app/lib/auth-client";
-import { handleDeletedUser } from "@/actions/reports/postReport";
+import { handleDeletedUser } from "@/actions/user/userActions";
 import { useRouter } from "next/navigation";
 import {
   Dialog,

@@ -9,9 +9,62 @@
   left: auto !important;
 }
 
-.report-sidebar {
-  z-index: 9999 !important;
+/* z-index hierarchy */
+
+.maplibregl-canvas, .maplibregl-canvas-container {
+  z-index: 10 !important;
 }
+
+.maplibregl-map {
+  z-index: 15 !important;
+}
+.maplibregl-ctrl-group {
+  z-index: 50 !important;
+}
+
+.maplibregl-marker {
+  z-index: 50 !important;
+}
+
+.maplibregl-marker:hover {
+  z-index: 55 !important;
+}
+
+.maplibregl-popup {
+  z-index: 60 !important;
+}
+
+.filter-notification {
+  z-index: 100 !important;
+}
+
+.settings-container {
+  z-index: 300 !important;
+}
+
+.add-marker-button {
+  z-index: 300 !important;
+}
+
+.report-sidebar {
+  z-index: 100 !important;
+}
+
+/* For dialogs and sheets */
+.dialog-box, .mobile-nav-sheet {
+  z-index: 200 !important;
+}
+
+.dialog-box-overlay, .mobile-nav-sheet-overlay {
+  z-index: 150 !important;
+}
+
+/* For tooltips */
+[data-radix-popper-content-wrapper] {
+  z-index: 300 !important;
+}
+
+/* End of z index settings */
 
 .map-pin-hovered {
   filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
@@ -28,27 +81,6 @@
   opacity: 0.7;
 }
 
-.dialog-box{
-  z-index: 9999 !important;
-}
-
-.dialog-box-overlay{
-  z-index: 9990 !important;
-}
-
-.mobile-nav-sheet {
-  z-index: 9999 !important;
-}
-
-.mobile-nav-sheet-overlay {
-  z-index: 9990 !important;
-}
-
-/* Ensure tooltips appear above popups with higher specificity */
-div[data-radix-popper-content-wrapper] {
-  z-index: 9900 !important;
-}
-
 /* Improve the tooltip positioning */
 [data-radix-popper-content] {
   padding: 8px !important;
@@ -60,13 +92,11 @@ div[data-radix-popper-content-wrapper] {
 
 /* Force styling on maplibregl popups to match your theme */
 .maplibregl-popup {
-  z-index: 9800 !important;
   max-width: 350px !important;
 }
 
 /* Control marker z-index to be below popups */
 .maplibregl-marker {
-  z-index: 9700 !important;
   pointer-events: auto;
   cursor: pointer;
 }
@@ -490,7 +520,6 @@ div[data-radix-popper-content-wrapper] {
 
 .maplibregl-ctrl-group {
   @apply bg-background border border-border shadow-md;
-  z-index: 900 !important;
 }
 
 .maplibregl-ctrl-group button {
