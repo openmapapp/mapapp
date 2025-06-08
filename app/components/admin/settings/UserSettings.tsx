@@ -103,49 +103,19 @@ export default function UserSettings({ session }: UserSettingsProps) {
     if (!selectedUsers.length) return;
 
     setLoading(true);
-    let errorOccurred = false;
-    let errorMessage = "Failed to delete users";
-
     try {
-      // Process each deletion one by one to handle individual errors
-      for (const user of selectedUsers) {
-        try {
-          const result = await deleteUser(session, user.id);
+      await Promise.all(
+        selectedUsers.map((user) => deleteUser(session, user.id))
+      );
 
-          // Check if the response indicates an error
-          if (result && !result.success) {
-            errorOccurred = true;
-            errorMessage = result.error || errorMessage;
-            // Break from deletion attempts if we hit the last admin error
-            if (result.error && result.error.includes("last admin")) {
-              break;
-            }
-          }
-        } catch (err) {
-          errorOccurred = true;
-          console.error(`Error deleting user ${user.id}:`, err);
-        }
-      }
+      toast.success("User(s) deleted successfully");
 
-      if (errorOccurred) {
-        toast.error(errorMessage);
-      } else {
-        toast.success("User(s) deleted successfully");
-
-        // Update local state for successfully deleted users
-        // We need to fetch the updated list from the server to be safe
-        const updatedUsers = await fetchUsers();
-        if (updatedUsers) {
-          setUsers(updatedUsers);
-        } else {
-          // Fallback to client-side filtering if fetch fails
-          setUsers((prev) =>
-            prev.filter((u) => !selectedUsers.some((s) => s.id === u.id))
-          );
-        }
-      }
+      // Update local state
+      setUsers((prev) =>
+        prev.filter((u) => !selectedUsers.some((s) => s.id === u.id))
+      );
     } catch (err) {
-      console.error("Error in deletion process:", err);
+      console.error("Error deleting users:", err);
       toast.error("Failed to delete users");
     } finally {
       setLoading(false);
@@ -170,62 +140,25 @@ export default function UserSettings({ session }: UserSettingsProps) {
     if (!selectedUsers.length || !newRole) return;
 
     setLoading(true);
-    let errorOccurred = false;
-    let errorMessage = "Failed to update user roles";
-    let successCount = 0;
-    let updatedUserIds: string[] = [];
-
     try {
-      // Process each role update one by one to handle individual errors
-      for (const user of selectedUsers) {
-        try {
-          const result = await updateUserRole(session, user.id, newRole);
+      await Promise.all(
+        selectedUsers.map((user) => updateUserRole(session, user.id, newRole))
+      );
 
-          // Check if the response indicates an error
-          if (result && !result.success) {
-            errorOccurred = true;
-            errorMessage = result.error || errorMessage;
-            // Break from update attempts if we hit the last admin error
-            if (result.error && result.error.includes("last admin")) {
-              break;
-            }
-          } else {
-            // Track successful updates
-            successCount++;
-            updatedUserIds.push(user.id);
-          }
-        } catch (err) {
-          errorOccurred = true;
-          console.error(`Error updating role for user ${user.id}:`, err);
-        }
-      }
+      toast.success(
+        `Updated role to ${newRole} for ${selectedUsers.length} user${
+          selectedUsers.length > 1 ? "s" : ""
+        }`
+      );
 
-      if (successCount > 0) {
-        toast.success(
-          `Updated role to ${newRole} for ${successCount} user${
-            successCount > 1 ? "s" : ""
-          }`
-        );
-
-        // Update local state only for successfully updated users
-        setUsers((prev) =>
-          prev.map((u) =>
-            updatedUserIds.includes(u.id) ? { ...u, role: newRole } : u
-          )
-        );
-      }
-
-      if (errorOccurred) {
-        toast.error(errorMessage);
-
-        // Since there was an error, fetch the latest user data to ensure UI is accurate
-        const updatedUsers = await fetchUsers();
-        if (updatedUsers) {
-          setUsers(updatedUsers);
-        }
-      }
+      // Update local state
+      setUsers((prev) =>
+        prev.map((u) =>
+          selectedUsers.some((s) => s.id === u.id) ? { ...u, role: newRole } : u
+        )
+      );
     } catch (err) {
-      console.error("Error in role update process:", err);
+      console.error("Error updating user roles:", err);
       toast.error("Failed to update user roles");
     } finally {
       setLoading(false);
@@ -270,7 +203,7 @@ export default function UserSettings({ session }: UserSettingsProps) {
               ? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-2">
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -332,7 +265,7 @@ export default function UserSettings({ session }: UserSettingsProps) {
             </Select>
           </div>
 
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-2">
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => confirmRoleChange(role as any)}

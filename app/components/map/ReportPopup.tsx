@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useData } from "@/context/DataProvider";
 import { voteOnReport } from "@/actions/reports/postVotes";
 import { getUserVotes } from "@/actions/reports/getUserVote";
-import { confirmReport } from "@/actions/reports/reportModeration";
+import { confirmReport } from "@/actions/reports/confirmReport";
 import type { Session } from "@/app/lib/auth-client";
 
 import { Popup } from "react-map-gl/maplibre";
@@ -29,13 +29,6 @@ import {
   Clock,
   CalendarPlus,
   Binoculars,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  HelpCircle,
-  Pin,
-  MapPin,
-  MapPinOff,
 } from "lucide-react";
 
 // Create a vote cache to avoid repeated API calls
@@ -49,14 +42,12 @@ interface Report {
   description: string;
   createdAt: string;
   updatedAt: string;
-  departedAt?: string | null;
+  lastSighting?: string;
   confirmationCount: number;
   disconfirmationCount: number;
   submittedById?: string;
   isVisible: boolean;
-  isPermanent: boolean;
-  reportStatus: "ACTIVE" | "CONFIRMED" | "DISPUTED" | "RESOLVED" | "INCORRECT";
-  itemStatus: "PRESENT" | "DEPARTED" | "UNKNOWN";
+  reportStatus: "ACTIVE" | "CONFIRMED" | "DISPUTED" | "RESOLVED" | "INCORRECT"; // New property for admin verification
 }
 
 interface ReportPopupProps {
@@ -146,70 +137,27 @@ export default function ReportPopup({
 
   const reportTypeName = reportType ? reportType.name : "Unknown Type";
 
-  // Get status badge settings based on report status
-  const getReportStatusBadge = () => {
-    switch (selectedReport.reportStatus) {
-      case "CONFIRMED":
-        return {
-          label: "Confirmed",
-          color: "bg-green-600 text-white",
-          icon: <CheckCircle className="h-3 w-3 mr-1" />,
-        };
-      case "DISPUTED":
-        return {
-          label: "Disputed",
-          color: "bg-amber-500 text-white",
-          icon: <AlertTriangle className="h-3 w-3 mr-1" />,
-        };
-      case "RESOLVED":
-        return {
-          label: "Resolved",
-          color: "bg-blue-600 text-white",
-          icon: <Check className="h-3 w-3 mr-1" />,
-        };
-      case "INCORRECT":
-        return {
-          label: "Incorrect",
-          color: "bg-red-600 text-white",
-          icon: <XCircle className="h-3 w-3 mr-1" />,
-        };
-      case "ACTIVE":
-      default:
-        return {
-          label: "Active",
-          color: "bg-slate-600 text-white",
-          icon: <Clock className="h-3 w-3 mr-1" />,
-        };
+  // Determine the status of the report based on confirmation/disconfirmation counts
+  const getStatus = () => {
+    if (selectedReport.reportStatus === "CONFIRMED") {
+      return {
+        label: "Confirmed",
+        color: "bg-primary text-primary-foreground",
+      };
     }
+    if (selectedReport.disconfirmationCount >= 5) {
+      return {
+        label: "Not There",
+        color: "bg-destructive text-destructive-foreground",
+      };
+    }
+    if (selectedReport.confirmationCount >= 5) {
+      return { label: "Confirmed", color: "bg-green-600 text-white" };
+    }
+    return { label: "Unconfirmed", color: "bg-amber-500 text-white" };
   };
 
-  // Get item status badge settings
-  const getItemStatusBadge = () => {
-    switch (selectedReport.itemStatus) {
-      case "PRESENT":
-        return {
-          label: "Present",
-          color: "bg-indigo-600 text-white",
-          icon: <MapPin className="h-3 w-3 mr-1" />,
-        };
-      case "DEPARTED":
-        return {
-          label: "Departed",
-          color: "bg-purple-600 text-white",
-          icon: <MapPinOff className="h-3 w-3 mr-1" />,
-        };
-      case "UNKNOWN":
-      default:
-        return {
-          label: "Unknown",
-          color: "bg-gray-500 text-white",
-          icon: <HelpCircle className="h-3 w-3 mr-1" />,
-        };
-    }
-  };
-
-  const reportStatusBadge = getReportStatusBadge();
-  const itemStatusBadge = getItemStatusBadge();
+  const { label, color } = getStatus();
 
   // Handle voting on a report
   const handleVote = async (voteType: number) => {
@@ -228,29 +176,13 @@ export default function ReportPopup({
         voteType,
       };
 
-      const result = await voteOnReport(votePayload);
+      await voteOnReport(votePayload);
 
-      if (result.success) {
-        // Update the cache
-        voteCache.set(selectedReport.id, voteType);
-        setUserVote(voteType);
+      // Update the cache
+      voteCache.set(selectedReport.id, voteType);
+      setUserVote(voteType);
 
-        // Update the report status if changed
-        if (
-          result.reportStatus &&
-          result.reportStatus !== selectedReport.reportStatus
-        ) {
-          setSelectedReport({
-            ...selectedReport,
-            reportStatus: result.reportStatus,
-            itemStatus: result.itemStatus || selectedReport.itemStatus,
-          });
-        }
-
-        toast.success("Vote submitted!");
-      } else {
-        toast.error(result.error || "Failed to submit vote");
-      }
+      toast.success("Vote submitted!");
     } catch (error) {
       console.error("Error submitting vote:", error);
       toast.error("Failed to submit vote");
@@ -344,45 +276,11 @@ export default function ReportPopup({
     >
       <Card className="w-full bg-card shadow-md border border-border relative">
         <CardHeader className="pb-2 pt-3 px-3">
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-1">
-                {reportTypeName || "Report"}
-                {selectedReport.isPermanent && (
-                  <Pin className="h-3 w-3 ml-1 text-muted-foreground" />
-                )}
-              </CardTitle>
-            </div>
-
-            {/* Status badges */}
-            <div className="flex items-center gap-2">
-              {selectedReport.reportStatus === "DISPUTED" && (
-                <Badge
-                  className={`${reportStatusBadge.color} text-xs px-2 py-0.5 flex items-center`}
-                >
-                  {reportStatusBadge.icon}
-                  {reportStatusBadge.label}
-                </Badge>
-              )}
-
-              <Badge
-                className={`${itemStatusBadge.color} text-xs px-2 py-0.5 flex items-center`}
-              >
-                {itemStatusBadge.icon}
-                {itemStatusBadge.label}
-              </Badge>
-              {/* Vote counts display */}
-              <div className="flex space-x-2 text-xs">
-                <span className="flex items-center text-green-600">
-                  <Check className="h-3 w-3 mr-1" />
-                  {selectedReport.confirmationCount}
-                </span>
-                <span className="flex items-center text-red-600">
-                  <X className="h-3 w-3 mr-1" />
-                  {selectedReport.disconfirmationCount}
-                </span>
-              </div>
-            </div>
+          <div className="flex flex-col items-start justify-between">
+            <CardTitle className="text-base flex items-center gap-1">
+              {reportTypeName || "Report"}
+            </CardTitle>
+            <Badge className={`${color} text-xs px-2 py-0.5`}>{label}</Badge>
           </div>
         </CardHeader>
 
@@ -404,10 +302,12 @@ export default function ReportPopup({
                 </div>
               )}
 
-              {selectedReport.departedAt && (
+              {selectedReport.lastSighting && (
                 <div className="flex items-center gap-1">
-                  <MapPinOff size={14} />
-                  <span>Departed: {formatDate(selectedReport.departedAt)}</span>
+                  <Binoculars size={14} />
+                  <span>
+                    Last Sighting: {formatDate(selectedReport.lastSighting)}
+                  </span>
                 </div>
               )}
             </div>
@@ -427,11 +327,10 @@ export default function ReportPopup({
             )}
           </ScrollArea>
 
-          {/* Vote buttons (only show if user is not the submitter and the item is still present) */}
+          {/* Vote buttons (only show if user is not the submitter) */}
           {(session?.user?.id !== selectedReport.submittedById ||
             !selectedReport.submittedById) &&
-            (globalSettings?.votesOpenToVisitors || session?.user?.id) &&
-            selectedReport.itemStatus !== "DEPARTED" && (
+            (globalSettings?.votesOpenToVisitors || session?.user?.id) && (
               <div className="flex justify-between gap-2 pt-2">
                 <Button
                   size="sm"
@@ -477,7 +376,7 @@ export default function ReportPopup({
               </Button>
             )}
 
-            {/* Confirm/Dispute button for admins/mods */}
+            {/* Confirm button for admins/mods */}
             {isAdminOrMod && (
               <Button
                 variant="outline"
@@ -490,7 +389,7 @@ export default function ReportPopup({
                 onClick={handleConfirm}
                 disabled={loading.confirm}
               >
-                {selectedReport.reportStatus === "CONFIRMED" ? (
+                {selectedReport.isVerified ? (
                   <>
                     <ShieldAlert className="mr-2 h-4 w-4" />
                     Dispute Report

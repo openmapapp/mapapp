@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useData } from "../context/DataProvider";
 import { useSession } from "./lib/auth-client";
 import MapSkeleton from "./components/map/MapSkeleton";
 import { deleteReport } from "@/actions/reports/deleteReport";
 import ReportSidebar from "./components/map/ReportSidebar";
 import dynamic from "next/dynamic";
-import { toast } from "sonner";
 
 // Define proper types for reports and events
 interface Report {
@@ -39,6 +38,11 @@ const MapComponent = dynamic(() => import("./components/map/MapComponent"), {
   loading: () => <MapSkeleton />,
 });
 
+// Lazy load components that aren't needed immediately
+const SettingsContainer = lazy(
+  () => import("./components/map/settings/SettingsContainer")
+);
+
 // Socket initialization moved to a separate hook for better management
 import { useSocketConnection } from "@/hooks/useSocketConnection";
 
@@ -50,9 +54,6 @@ const Page = () => {
   const [hoveredReportId, setHoveredReportId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
-  const [loading, setLoading] = useState<{ delete: boolean }>({
-    delete: false,
-  });
 
   // Use the socket hook instead of initializing directly
   const socket = useSocketConnection();
@@ -66,43 +67,43 @@ const Page = () => {
   }
 
   const handleDelete = async (reportId: string) => {
+    if (!userId) {
+      console.error("❌ No user ID found, cannot delete report");
+      return;
+    }
+
     try {
-      // Show loading state if you have one
-      setLoading({ ...loading, delete: true });
-
-      // Call the server action
       const response = await deleteReport(reportId, session);
-
-      if (response.success) {
-        // Update local state
-        setReports((prevReports) =>
-          prevReports.filter((r) => r.id !== Number(reportId))
-        );
-
-        // Close any open popups
-        setSelectedReport(null);
-
-        // Notify via socket
-        socket?.emit("report-deleted", { reportId: Number(reportId) });
-
-        // Show success message
-        toast.success(response.message || "Report deleted successfully");
-      } else {
-        // Show error message
-        toast.error(response.error || "Failed to delete report");
-        console.error("Delete report failed:", response.error);
+      if (!response) {
+        console.error("❌ Failed to delete report");
+        return;
       }
+
+      setReports((prevReports) =>
+        prevReports.filter((r) => r.id !== Number(reportId))
+      );
+      setSelectedReport(null);
+
+      socket?.emit("report-deleted", { reportId });
     } catch (error) {
       console.error("Error deleting report:", error);
-      toast.error("An unexpected error occurred while deleting the report");
-    } finally {
-      // Reset loading state
-      setLoading({ ...loading, delete: false });
     }
   };
 
   return (
     <div className="relative h-[calc(100vh-81px)] w-full overflow-hidden">
+      <div className="absolute z-10">
+        <Suspense
+          fallback={
+            <div className="p-2 bg-background/80 rounded-md">
+              Loading settings...
+            </div>
+          }
+        >
+          <SettingsContainer />
+        </Suspense>
+      </div>
+
       <ReportSidebar
         setSelectedReport={setSelectedReport}
         hoveredReportId={hoveredReportId}

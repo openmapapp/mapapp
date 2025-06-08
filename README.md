@@ -113,19 +113,11 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [x] Add filter/sort options to user table
 - [x] Add blog functionality with rich text editor and minimal CMS
 - [x] Add easily editable About page
-- [x] Export historical map data as CSV (or other?)
+- [ ] Export historical map data as CSV (or other?)
 - [x] Add Markers admin settings section so admin can set categories, pictures, and fields
 - [x] Update schema to reflect difference between report item that has left vs incorrect report
-- [x] Filter reports by type, etc.
+- [ ] Filter reports by type, etc.
 - [x] Add Activity updates pane
-- [ ] Add daily service for decay updates like Uptime Robot, Vercel Cron Jobs, or a dedicated service like GitHub Actions.
-- [x] Remove report status badge from ReportPopup unless report is disputed
-- [ ] Ensure items no longer present have their isVisible set to no and are not displayed
-- [x] Add switch for showing or not showing reports that are no longer present
-- [ ] Think about how to export report status and item status history
-- [x] Add mod/admin queue of disputed reports
-- [ ] Add heatmap
-- [x] Add warning for deleting only admin
 
 ### UI
 
@@ -134,7 +126,6 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [x] Make sure "Home" button accessible in admin panel
 - [x] Make mobile friendly
 - [x] Make sure animations work for adding and removing pins, and on load. On load, pins should drop in staggered.
-- [x] Add refresh button
 - [ ] Fine tune WYSIWYG editor and about/blog UI
 
 ### Other

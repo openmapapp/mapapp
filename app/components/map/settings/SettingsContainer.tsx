@@ -3,105 +3,27 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Wrench,
-  X,
-  Clock,
-  Filter,
-  Layers,
-  Download,
-  Check,
-  RotateCcw,
-} from "lucide-react";
+import { Wrench, X, Clock, Filter, MapPin, Layers } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TimeRangeSlider from "./TimeRangeSlider";
 import { useClickAway } from "react-use";
-import { useData } from "@/context/DataProvider";
-import TimeRangeTab from "./TimeRangeTab";
-import FilterTab from "./FilterTab";
-import LayersTab from "./LayersTab";
-import ExportTab from "./ExportTab";
+import { cn } from "@/lib/utils";
 
-interface SettingsContainerProps {
-  setHeatmapEnabled: (enabled: boolean) => void;
-  heatmapEnabled: boolean;
-  setHeatmapIntensity: (intensity: number) => void;
-  heatmapIntensity: number;
-  setHeatmapRadius: (radius: number) => void;
-  heatmapRadius: number;
-  setHeatmapOpacity: (opacity: number) => void;
-  heatmapOpacity: number;
-}
-
-export default function SettingsContainer({
-  // Heatmap props
-  setHeatmapEnabled,
-  heatmapEnabled,
-  setHeatmapIntensity,
-  heatmapIntensity,
-  setHeatmapRadius,
-  heatmapRadius,
-  setHeatmapOpacity,
-  heatmapOpacity,
-}: SettingsContainerProps) {
-  const { filters, applyFilters, resetFilters } = useData();
-
+export default function SettingsContainer() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("time");
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Handle filter application with loading state
-  const handleApplyFilters = () => {
-    setIsLoading(true);
-    // Use setTimeout to allow UI to update with loading state
-    setTimeout(() => {
-      applyFilters();
-      setIsLoading(false);
-    }, 300);
-  };
-
-  // Reset filters with loading state
-  const handleResetFilters = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      resetFilters();
-      setIsLoading(false);
-    }, 300);
-  };
 
   // Close settings when clicking outside
-  useClickAway(
-    containerRef,
-    (e) => {
-      // Don't close if clicking inside a popover
-      const target = e.target as HTMLElement;
-      const isDatePickerClick = !!target.closest('[role="dialog"]');
-      const isDatePickerTriggerClick = !!target.closest(".date-range-trigger");
-
-      // Check if the click is inside the settings container
-      const isInsideSettings = !!containerRef.current?.contains(target);
-
-      if (
-        isOpen &&
-        !isDatePickerClick &&
-        !isDatePickerTriggerClick &&
-        !isInsideSettings
-      ) {
-        setIsOpen(false);
-      }
-    },
-    ["mousedown", "touchstart"]
-  );
+  useClickAway(containerRef, () => {
+    if (isOpen) setIsOpen(false);
+  });
 
   // Close settings when pressing Escape key
   useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
-        // Check if a popover is open
-        const popoverOpen = document.querySelector('[role="dialog"]');
-        if (!popoverOpen) {
-          setIsOpen(false);
-        }
+        setIsOpen(false);
       }
     };
 
@@ -109,166 +31,205 @@ export default function SettingsContainer({
     return () => document.removeEventListener("keydown", handleEscapeKey);
   }, [isOpen]);
 
+  // Animation variants for container
+  const containerVariants = {
+    closed: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: "var(--color-background)",
+      boxShadow: "var(--shadow-sm)",
+      border: "1px solid var(--color-border)",
+    },
+    open: {
+      width: "min(90vw, 320px)",
+      height: "auto",
+      borderRadius: 16,
+      backgroundColor: "var(--color-background)",
+      boxShadow: "var(--shadow-md)",
+      border: "1px solid var(--color-border)",
+    },
+  };
+
+  // Animation variants for content
+  const contentVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.2,
+        delay: 0.1,
+        ease: "easeOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: {
+        duration: 0.1,
+      },
+    },
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className="settings-container fixed top-38 left-4 sm:left-6 z-10"
-      onClick={(e) => {
-        // Prevent click events from propagating to the parent
-        e.stopPropagation();
-      }}
-    >
-      {/* Button when closed */}
-      {!isOpen && (
-        <Button
-          size="icon"
-          variant="secondary"
-          className="h-12 w-12 rounded-full bg-card text-card-foreground hover:bg-card/90"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open settings"
-        >
-          <Wrench size={20} />
-        </Button>
-      )}
-
-      {/* Container when open */}
-      <AnimatePresence>
-        {isOpen && (
+    <div ref={containerRef} className="fixed top-38 left-4 sm:left-6 z-10">
+      <motion.div
+        initial="closed"
+        animate={isOpen ? "open" : "closed"}
+        variants={containerVariants}
+        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+        className="overflow-hidden relative"
+      >
+        {/* Toggle button - changes position and icon when open/closed */}
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ width: 56, height: 48, borderRadius: 24, opacity: 0 }}
-            animate={{
-              width: "min(90vw, 360px)",
-              height: "max(75vh, 400px)",
-              borderRadius: 16,
-              opacity: 1,
-            }}
-            exit={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              opacity: 0,
-            }}
-            transition={{ type: "spring", stiffness: 500, damping: 35 }}
-            className="bg-background border border-border shadow-md overflow-y-auto max-h-[85vh]"
-            style={{ zIndex: 100 }}
+            key={isOpen ? "open" : "closed"}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "absolute",
+              isOpen
+                ? "top-4 right-4"
+                : "top-0 left-0 w-full h-full flex items-center justify-center"
+            )}
           >
-            {/* Close button */}
-            <div className="absolute top-1 right-0">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => setIsOpen(false)}
-                aria-label="Close settings"
-                className="hover:bg-secondary/10"
-              >
-                <X size={20} />
-              </Button>
-            </div>
+            <Button
+              size="icon"
+              variant={isOpen ? "ghost" : "secondary"}
+              className={cn(
+                "rounded-full",
+                !isOpen &&
+                  "w-full h-full bg-card text-card-foreground hover:bg-card/90"
+              )}
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? "Close settings" : "Open settings"}
+            >
+              {isOpen ? <X size={20} /> : <Wrench size={20} />}
+            </Button>
+          </motion.div>
+        </AnimatePresence>
 
-            <div className="pt-8 pb-8 px-5">
+        {/* Settings Content */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="pt-4 pb-4 px-4"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-lg">Map Settings</h2>
+                {/* This empty div ensures proper spacing in flex layout */}
+                <div className="w-5"></div>
+              </div>
+
               <Tabs
                 defaultValue="time"
                 value={activeTab}
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className="grid grid-cols-4 mb-4">
-                  <TabsTrigger
-                    value="time"
-                    className="flex items-center gap-1 px-1 sm:px-2"
-                  >
+                <TabsList className="grid grid-cols-3 mb-4">
+                  <TabsTrigger value="time" className="flex items-center gap-1">
                     <Clock size={14} />
-                    <span>Recent</span>
+                    <span>Time</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="filter"
-                    className="flex items-center gap-1 px-1 sm:px-2 relative"
+                    className="flex items-center gap-1"
                   >
                     <Filter size={14} />
                     <span>Filter</span>
-                    {(filters.selectedReportTypes.length > 0 ||
-                      Object.keys(filters.selectedFields).length > 0 ||
-                      Object.keys(filters.globalFieldFilters).length > 0 ||
-                      filters.useHistoricalMode) && (
-                      <span className="w-2 h-2 bg-primary rounded-full absolute top-1 right-1" />
-                    )}
                   </TabsTrigger>
                   <TabsTrigger
                     value="layers"
-                    className="flex items-center gap-1 px-1 sm:px-2"
+                    className="flex items-center gap-1"
                   >
                     <Layers size={14} />
                     <span>Layers</span>
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="export"
-                    className="flex items-center gap-1 px-1 sm:px-2"
-                  >
-                    <Download size={14} />
-                    <span>Export</span>
-                  </TabsTrigger>
                 </TabsList>
 
-                {/* Recent Events Tab */}
+                {/* Time Settings Tab */}
                 <TabsContent value="time" className="space-y-4">
-                  <TimeRangeTab />
+                  <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+                    <TimeRangeSlider />
+                  </div>
+
+                  <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+                    <h3 className="font-medium mb-2">Historical View</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Choose a custom date range to view historical data
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 w-full"
+                      onClick={() => {
+                        // Placeholder for future functionality
+                        alert("Historical view feature coming soon");
+                      }}
+                    >
+                      View Historical Data
+                    </Button>
+                  </div>
                 </TabsContent>
 
-                {/* Filter Tab with collapsible panes */}
+                {/* Filter Tab */}
                 <TabsContent value="filter" className="space-y-4">
-                  <FilterTab isLoading={isLoading} />
-
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      className="flex-1"
-                      onClick={handleApplyFilters}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <span className="animate-spin mr-1">⧗</span>
-                      ) : (
-                        <Check size={16} className="mr-1" />
-                      )}
-                      {filters.isFiltering ? "Update Filters" : "Apply Filters"}
-                    </Button>
-
-                    {filters.isFiltering && (
-                      <Button
-                        variant="outline"
-                        className="flex-shrink-0"
-                        onClick={handleResetFilters}
-                        disabled={isLoading}
-                        aria-label="Reset Filters"
-                      >
-                        <RotateCcw size={16} />
-                      </Button>
-                    )}
+                  <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+                    <h3 className="font-medium mb-2">Filter by Type</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select which report types to display on the map
+                    </p>
+                    {/* Placeholder for future filter controls */}
+                    <div className="mt-2 text-sm text-muted-foreground italic">
+                      Filter controls coming soon
+                    </div>
                   </div>
                 </TabsContent>
 
                 {/* Layers Tab */}
                 <TabsContent value="layers" className="space-y-4">
-                  <LayersTab
-                    setHeatmapEnabled={setHeatmapEnabled}
-                    heatmapEnabled={heatmapEnabled}
-                    setHeatmapIntensity={setHeatmapIntensity}
-                    heatmapIntensity={heatmapIntensity}
-                    setHeatmapRadius={setHeatmapRadius}
-                    heatmapRadius={heatmapRadius}
-                    setHeatmapOpacity={setHeatmapOpacity}
-                    heatmapOpacity={heatmapOpacity}
-                  />
-                </TabsContent>
+                  <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+                    <h3 className="font-medium mb-2">Map Style</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Choose different map styles and visualization options
+                    </p>
+                    {/* Placeholder for future layer controls */}
+                    <div className="mt-2 text-sm text-muted-foreground italic">
+                      Map style options coming soon
+                    </div>
+                  </div>
 
-                {/* Export Tab */}
-                <TabsContent value="export" className="space-y-4">
-                  <ExportTab />
+                  <div className="bg-secondary/50 rounded-lg p-3 border border-border">
+                    <h3 className="font-medium mb-2">Heat Map</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Toggle heat map visualization for report density
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 w-full"
+                      onClick={() => {
+                        // Placeholder for future functionality
+                        alert("Heat map feature coming soon");
+                      }}
+                    >
+                      Enable Heat Map
+                    </Button>
+                  </div>
                 </TabsContent>
               </Tabs>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

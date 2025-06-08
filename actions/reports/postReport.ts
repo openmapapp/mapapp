@@ -9,8 +9,6 @@ interface ReportPayload {
   reportTypeId: number;
   userId: string | null;
   description?: string | Record<string, any>;
-  isPermanent?: boolean;
-  itemStatus?: "PRESENT" | "DEPARTED" | "UNKNOWN";
 }
 
 export async function postReport(payload: ReportPayload) {
@@ -21,8 +19,6 @@ export async function postReport(payload: ReportPayload) {
       reportTypeId,
       userId,
       description = {},
-      isPermanent = false,
-      itemStatus = "PRESENT",
     } = payload;
 
     // Validate reportTypeId exists
@@ -63,8 +59,6 @@ export async function postReport(payload: ReportPayload) {
         trustScore: 1,
         submittedById: userId,
         reportTypeId,
-        isPermanent: isPermanent,
-        itemStatus: itemStatus,
       },
       include: {
         // Include full report type for immediate use in UI
@@ -106,6 +100,34 @@ export async function postReport(payload: ReportPayload) {
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to post report",
+    };
+  }
+}
+
+export async function handleDeletedUser(userId: string) {
+  try {
+    // Update reports to anonymize them rather than delete
+    const updated = await db.report.updateMany({
+      where: { submittedById: userId },
+      data: {
+        submittedById: null,
+        // Optionally store original ID in a separate field for audit purposes
+        deletedUserId: userId,
+      },
+    });
+
+    return {
+      success: true,
+      count: updated.count,
+    };
+  } catch (error) {
+    console.error("Error handling deleted user's reports:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to update reports for deleted user",
     };
   }
 }

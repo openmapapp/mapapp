@@ -1,18 +1,14 @@
+// components/map/MapComponent.tsx
 "use client";
 
-import { useState, useRef, useEffect, lazy, Suspense } from "react";
-import { Map, Popup, MapRef, Source, Layer } from "react-map-gl/maplibre";
-import { heatmapLayer } from "./layers/HeatMapLayer";
+import { useRef, useEffect } from "react";
+import { Map, Popup, MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import PopupForm from "./PopupForm";
 import ReportMarkers from "./ReportMarkers";
 import ReportPopup from "./ReportPopup";
 import AddMarkerButton from "./AddMarkerButton";
 import ReportSubmissionMarker from "./ReportSubmissionMarker";
-import FilterNotification from "./FilterNotification";
-import FilterStatus from "./FilterStatus";
-import { useData } from "@/context/DataProvider";
-import RefreshButton from "./RefreshButton";
 
 interface MapComponentProps {
   globalSettings: any;
@@ -42,11 +38,6 @@ const MapComponent = ({
   hoveredReportId,
 }: MapComponentProps) => {
   const mapRef = useRef<MapRef | null>(null);
-  const [heatmapEnabled, setHeatmapEnabled] = useState(false);
-  const [heatmapIntensity, setHeatmapIntensity] = useState(5);
-  const [heatmapRadius, setHeatmapRadius] = useState(20);
-  const [heatmapOpacity, setHeatmapOpacity] = useState(0.7);
-  const { reports, filteredReports, filters } = useData();
 
   const mapCenter = {
     longitude: globalSettings.mapCenterLng || -73.935242,
@@ -93,27 +84,6 @@ const MapComponent = ({
     };
   }, [mapRef.current, selectedReport, setSelectedReport]);
 
-  // Use filtered reports when filtering is active, otherwise use all reports
-  const displayReports = filters.isFiltering ? filteredReports : reports;
-
-  // Format reports for the heatmap
-  const heatmapData = {
-    type: "FeatureCollection",
-    features: displayReports.map((report) => ({
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: "Point",
-        coordinates: [report.long, report.lat],
-      },
-    })),
-  };
-
-  // Lazy load components that aren't needed immediately
-  const SettingsContainer = lazy(
-    () => import("@/app/components/map/settings/SettingsContainer")
-  );
-
   return (
     <Map
       ref={mapRef}
@@ -131,31 +101,11 @@ const MapComponent = ({
       dragRotate={false}
       attributionControl={false}
     >
-      {/* Heatmap Layer */}
-      {heatmapEnabled && (
-        <Source id="heatmap-source" type="geojson" data={heatmapData}>
-          <Layer
-            {...heatmapLayer}
-            id="heatmap-layer"
-            source="heatmap-source"
-            paint={{
-              ...heatmapLayer.paint,
-              "heatmap-intensity": heatmapIntensity / 10,
-              "heatmap-radius": heatmapRadius,
-              "heatmap-opacity": heatmapOpacity,
-            }}
-          />
-        </Source>
-      )}
-
-      {/* Report Markers */}
-      {!heatmapEnabled && (
-        <ReportMarkers
-          setSelectedReport={setSelectedReport}
-          userId={userId}
-          hoveredReportId={hoveredReportId}
-        />
-      )}
+      <ReportMarkers
+        setSelectedReport={setSelectedReport}
+        userId={userId}
+        hoveredReportId={hoveredReportId}
+      />
 
       {editing ? (
         <Popup
@@ -183,42 +133,9 @@ const MapComponent = ({
         />
       )}
 
-      <div className="absolute settings-container">
-        <Suspense
-          fallback={
-            <div className="p-2 bg-background/80 rounded-md">
-              Loading settings...
-            </div>
-          }
-        >
-          <SettingsContainer
-            // Pass heatmap props
-            setHeatmapEnabled={setHeatmapEnabled}
-            heatmapEnabled={heatmapEnabled}
-            setHeatmapIntensity={setHeatmapIntensity}
-            heatmapIntensity={heatmapIntensity}
-            setHeatmapRadius={setHeatmapRadius}
-            heatmapRadius={heatmapRadius}
-            setHeatmapOpacity={setHeatmapOpacity}
-            heatmapOpacity={heatmapOpacity}
-          />
-        </Suspense>
-      </div>
-
-      {/* Filter notification banner */}
-      <FilterNotification />
-
-      {/* Filter status display */}
-      <FilterStatus />
-
-      {/* Add the refresh button in a suitable position */}
-      <div className="absolute top-4 right-4 z-10">
-        <RefreshButton />
-      </div>
-
       {/* Mobile-friendly add marker button */}
       {(session || globalSettings.submitReportsOpen) && (
-        <div className="absolute top-4 left-4 md:top-3 md:left-6 add-marker-button">
+        <div className="absolute top-4 left-4 md:top-3 md:left-6 z-10">
           <AddMarkerButton
             isAdding={isAdding}
             toggleMarker={() => setIsAdding(!isAdding)}
