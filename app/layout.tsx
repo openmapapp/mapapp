@@ -1,13 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./components/layout/ThemeProvider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { DataProvider } from "./components/layout/DataProvider";
-import { SocketProvider } from "./components/socketProvider";
+import { ThemeProvider } from "@/context/ThemeProvider";
+import { DataProvider } from "../context/DataProvider";
+import { SocketProvider } from "../context/SocketProvider";
 import Navbar from "./components/layout/Navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { AdminSidebar } from "./components/settings/AdminSidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,17 +18,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MappApp",
-  description: "Tag away",
+  title: "MapApp",
+  description: "Community-based real-time mapping platform",
+  applicationName: "MapApp",
+  keywords: ["mapping", "community", "real-time", "open source"],
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1.5,
+  userScalable: true,
+  themeColor: "#ffffff",
+  viewportFit: "cover",
 };
 
 const META_THEME_COLORS = {
   light: "#ffffff",
   dark: "#09090b",
-};
-
-export const viewport: Viewport = {
-  themeColor: META_THEME_COLORS.light,
 };
 
 export default function RootLayout({
@@ -39,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -52,9 +57,12 @@ export default function RootLayout({
             `,
           }}
         />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden overscroll-none m-0 p-0`}
       >
         <ThemeProvider
           attribute="class"
@@ -64,10 +72,12 @@ export default function RootLayout({
         >
           <SocketProvider>
             <DataProvider>
-              <main className="flex flex-col">
+              <main className="flex flex-col min-h-screen max-w-full overflow-x-hidden">
                 <Navbar />
-                {children}
-                <Toaster richColors />
+                <div className="flex-1 w-full flex justify-center overflow-hidden">
+                  {children}
+                </div>
+                <Toaster richColors position="top-center" closeButton />
               </main>
             </DataProvider>
           </SocketProvider>

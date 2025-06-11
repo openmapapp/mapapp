@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGlobalSettings } from "@/actions/globalSettings";
+import { getGlobalSettings } from "@/actions/admin/globalSettings";
 
 export async function GET() {
   try {

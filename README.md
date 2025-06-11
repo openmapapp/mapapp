@@ -104,19 +104,29 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [ ] Ensure all server actions are protected by `requireRole`
 - [ ] Ensure API route protection
 - [ ] Make sure user input is sanitized from both a typescript and a security perspective
+- [ ] Add email confirmations for new users
 
 ### Functionality
 
-- [ ] More role management tools (e.g., promote to mod)
-- [ ] Add filter/sort options to user table
+- [x] More role management tools (e.g., promote to mod)
+- [x] Bulk changes to user modifications on the admin panel
+- [x] Add filter/sort options to user table
+- [x] Add blog functionality with rich text editor and minimal CMS
+- [x] Add easily editable About page
+- [ ] Export historical map data as CSV (or other?)
+- [x] Add Markers admin settings section so admin can set categories, pictures, and fields
+- [x] Update schema to reflect difference between report item that has left vs incorrect report
+- [ ] Filter reports by type, etc.
+- [x] Add Activity updates pane
 
 ### UI
 
-- [ ] Admin user panel UI improvements
-- [ ] Standardize UI across site
-- [ ] Orient ReportPopups so they don’t go outside the screen
-- [ ] Make mobile friendly
-- [ ] Make sure animations work for adding and removing pins, and on load. On load, pins should drop in staggered.
+- [x] Admin user panel UI improvements
+- [x] Standardize UI across site
+- [x] Make sure "Home" button accessible in admin panel
+- [x] Make mobile friendly
+- [x] Make sure animations work for adding and removing pins, and on load. On load, pins should drop in staggered.
+- [ ] Fine tune WYSIWYG editor and about/blog UI
 
 ### Other
 

@@ -1,54 +1,70 @@
 "use client";
 
-import { useState } from "react";
-import { Map, Popup } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { io } from "socket.io-client";
-import { useData } from "./components/layout/DataProvider";
+import { useState, lazy, Suspense } from "react";
+import { useData } from "../context/DataProvider";
 import { useSession } from "./lib/auth-client";
-import type { Session } from "./lib/auth-client";
-import { deleteReport } from "@/actions/deleteReport";
-import PopupForm from "./components/map/PopupForm";
-import ReportMarkers from "./components/map/ReportMarkers";
-import ReportPopup from "./components/map/ReportPopup";
-import AddMarkerButton from "./components/map/AddMarkerButton";
-import ReportSubmissionMarker from "./components/map/ReportSubmissionMarker";
-import SettingsContainer from "./components/map/settings/SettingsContainer";
+import MapSkeleton from "./components/map/MapSkeleton";
+import { deleteReport } from "@/actions/reports/deleteReport";
+import ReportSidebar from "./components/map/ReportSidebar";
+import dynamic from "next/dynamic";
 
-const socket = io("http://localhost:3005", {
-  reconnection: true,
-  reconnectionAttempts: 10,
-  reconnectionDelay: 2000,
+// Define proper types for reports and events
+interface Report {
+  id: number;
+  lat: number;
+  long: number;
+  reportTypeId: number;
+  description?: Record<string, any>;
+  image?: string;
+  createdAt: string;
+  submittedById?: string;
+  confirmationCount: number;
+  disconfirmationCount: number;
+  isVisible: boolean;
+  reportType?: {
+    id: number;
+    name: string;
+    fields: Record<string, any>;
+  };
+  submittedBy?: {
+    id: string;
+    name: string;
+  };
+}
+
+// Dynamically import heavy components
+const MapComponent = dynamic(() => import("./components/map/MapComponent"), {
+  ssr: false,
+  loading: () => <MapSkeleton />,
 });
+
+// Lazy load components that aren't needed immediately
+const SettingsContainer = lazy(
+  () => import("./components/map/settings/SettingsContainer")
+);
+
+// Socket initialization moved to a separate hook for better management
+import { useSocketConnection } from "@/hooks/useSocketConnection";
 
 const Page = () => {
   const { data: session } = useSession();
   const userId = session?.user?.id || "";
   const { reports, setReports, globalSettings } = useData();
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [hoveredReportId, setHoveredReportId] = useState<number | null>(null);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [editing, setEditing] = useState<boolean>(false);
 
-  const mapCenter = {
-    longitude: globalSettings?.mapCenterLng,
-    latitude: globalSettings?.mapCenterLat,
-  };
-
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [isAdding, setIsAdding] = useState(false);
-  const [editing, setEditing] = useState(false);
+  // Use the socket hook instead of initializing directly
+  const socket = useSocketConnection();
 
   if (!globalSettings) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading map...
+        Loading app...
       </div>
     );
   }
-
-  const maxBounds = [
-    globalSettings.mapBoundsSwLng,
-    globalSettings.mapBoundsSwLat,
-    globalSettings.mapBoundsNeLng,
-    globalSettings.mapBoundsNeLat,
-  ];
 
   const handleDelete = async (reportId: string) => {
     if (!userId) {
@@ -56,78 +72,57 @@ const Page = () => {
       return;
     }
 
-    const response = await deleteReport(reportId, session);
-    if (!response) {
-      console.error("❌ Failed to delete report");
-      return;
+    try {
+      const response = await deleteReport(reportId, session);
+      if (!response) {
+        console.error("❌ Failed to delete report");
+        return;
+      }
+
+      setReports((prevReports) =>
+        prevReports.filter((r) => r.id !== Number(reportId))
+      );
+      setSelectedReport(null);
+
+      socket?.emit("report-deleted", { reportId });
+    } catch (error) {
+      console.error("Error deleting report:", error);
     }
-
-    setReports((prevReports) =>
-      prevReports.filter((r) => r.id !== Number(reportId))
-    );
-    setSelectedReport(null);
-
-    socket.emit("report-deleted", { reportId });
   };
 
   return (
-    <div className="h-[calc(100vh-76px)] w-screen relative">
-      <div className="absolute z-10 p-2">
-        <SettingsContainer />
+    <div className="relative h-[calc(100vh-81px)] w-full overflow-hidden">
+      <div className="absolute z-10">
+        <Suspense
+          fallback={
+            <div className="p-2 bg-background/80 rounded-md">
+              Loading settings...
+            </div>
+          }
+        >
+          <SettingsContainer />
+        </Suspense>
       </div>
-      <Map
-        initialViewState={{
-          latitude: globalSettings?.mapCenterLat,
-          longitude: globalSettings?.mapCenterLng,
-          zoom: globalSettings?.mapZoom,
-        }}
-        minZoom={globalSettings?.mapMinZoom || 10}
-        maxZoom={globalSettings?.mapMaxZoom || 18}
-        maxBounds={maxBounds}
-        style={{ width: "100%", height: "100%", position: "relative" }}
-        //mapStyle={"http://159.65.164.132:8080/data/v3.json"}
-        mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`}
-      >
-        <ReportMarkers setSelectedReport={setSelectedReport} userId={userId} />
-        {editing ? (
-          <Popup
-            latitude={selectedReport?.lat}
-            longitude={selectedReport?.long}
-            offset={10}
-            onClose={() => setEditing(false)}
-          >
-            <PopupForm
-              latitude={selectedReport?.lat}
-              longitude={selectedReport?.long}
-              existingReport={selectedReport}
-              setSelectedReport={setSelectedReport}
-              setEditing={setEditing}
-              onClose={() => setEditing(false)}
-            />
-          </Popup>
-        ) : (
-          <ReportPopup
-            selectedReport={selectedReport}
-            setSelectedReport={setSelectedReport}
-            setEditing={setEditing}
-            session={session}
-            handleDelete={handleDelete}
-          />
-        )}
-        {(session || globalSettings.submitReportsOpen) && (
-          <AddMarkerButton
-            isAdding={isAdding}
-            toggleMarker={() => setIsAdding(!isAdding)}
-          ></AddMarkerButton>
-        )}
-        {(session || globalSettings.submitReportsOpen) && (
-          <ReportSubmissionMarker
-            mapCenter={mapCenter}
-            isAdding={isAdding}
-            setIsAdding={setIsAdding}
-          ></ReportSubmissionMarker>
-        )}
-      </Map>
+
+      <ReportSidebar
+        setSelectedReport={setSelectedReport}
+        hoveredReportId={hoveredReportId}
+        setHoveredReportId={setHoveredReportId}
+      />
+
+      <MapComponent
+        globalSettings={globalSettings}
+        selectedReport={selectedReport}
+        setSelectedReport={setSelectedReport}
+        isAdding={isAdding}
+        setIsAdding={setIsAdding}
+        editing={editing}
+        setEditing={setEditing}
+        userId={userId}
+        session={session}
+        handleDelete={handleDelete}
+        hoveredReportId={hoveredReportId}
+      />
     </div>
   );
 };

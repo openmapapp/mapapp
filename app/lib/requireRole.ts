@@ -4,7 +4,6 @@ export const requireRole = (
   session: Session,
   requiredRole: "user" | "moderator" | "admin"
 ) => {
-  console.log("Session in requireRole:", session);
   if (
     !session ||
     typeof session !== "object" ||

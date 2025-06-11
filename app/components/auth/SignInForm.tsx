@@ -18,26 +18,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
-// Zod validation schema for sign-up
-const signUpSchema = z.object({
-  email: z.string().email("Invalid email"),
+// Define form schema with proper typing
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
+// TypeScript type for form values derived from the schema
+type SignInFormValues = z.infer<typeof signInSchema>;
+
+// Props interface
+interface SignInFormProps {
+  onSuccess?: () => void;
+}
+
+export default function SignInForm({ onSuccess }: SignInFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(signUpSchema),
+  // Initialize form with proper types
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const handleSignIn = async (values: any) => {
+  const handleSignIn = async (values: SignInFormValues) => {
     setLoading(true);
 
     try {
@@ -55,8 +65,8 @@ export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
           },
           onSuccess: () => {
             toast.success("Successfully signed in! Redirecting...");
-            onSuccess?.(); // Close modal if using in SignUpModal
-            // router.push("/"); // Refresh session
+            onSuccess?.(); // Close modal if using in SignInModal
+            router.refresh(); // Refresh session
           },
           onError: (ctx) => {
             toast.error(ctx.message || "Sign in failed");
@@ -65,7 +75,7 @@ export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
       );
     } catch (error) {
       toast.error("An unexpected error occurred.");
-      console.error("Signup error:", error);
+      console.error("Sign in error:", error);
     } finally {
       setLoading(false);
     }
@@ -81,7 +91,14 @@ export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" {...field} placeholder="Enter your email" />
+                <Input
+                  type="email"
+                  {...field}
+                  placeholder="Enter your email"
+                  className="w-full"
+                  autoComplete="email"
+                  disabled={loading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +115,10 @@ export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
                 <Input
                   type="password"
                   {...field}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
+                  className="w-full"
+                  autoComplete="current-password"
+                  disabled={loading}
                 />
               </FormControl>
               <FormMessage />
@@ -106,8 +126,20 @@ export default function SignInForm({ onSuccess }: { onSuccess?: () => void }) {
           )}
         />
 
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Signing In..." : "Sign In"}
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full transition-all"
+          variant="default"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing In...
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </form>
     </Form>
