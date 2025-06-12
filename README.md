@@ -91,7 +91,7 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - **Report voting & confirmation logic**
 - **Editable reports by owner/admin/mods**
 - **Custom map settings** like bounds, zoom, and mapStyle
-- **User roles** (admin, moderator, user)
+- **User roles** admin, moderator, user
 - **Registration flows** with invite link support
 - **Public/private map modes** depending on settings
 
@@ -105,6 +105,7 @@ NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
 - [ ] Ensure API route protection
 - [ ] Make sure user input is sanitized from both a typescript and a security perspective
 - [ ] Add email confirmations for new users
+- [ ] Add optional feature to allow users to register with just a username, if email address privacy is a concern
 
 ### Functionality
 
@@ -145,14 +146,34 @@ To get started:
 npm install
 ```
 
-2. Set up your `.env` file (ask for a sample or the actual one)
+2. Set up your `.env` file
 
-3. Run the development server:
+```bash
+BETTER_AUTH_SECRET= #Create a secret key for this app
+BETTER_AUTH_URL=http://localhost:3000 #Base URL of your app
+DB_HOST=localhost
+#DB_USER=<!--replace with your database user name-->
+#DB_PWD=<!--replace with your database password-->
+DB_NAME=
+
+# If using Mapbox API, set Mapbox API key here
+NEXT_PUBLIC_MAPTILER_KEY=
+
+DATABASE_URL="postgresql://user:password@localhost:5432/database?schema=public"
+```
+
+3. Seed PostgreSQL database: seed file coming shortly!
+
+4. Run websocket server, essentially plug-and-play here: https://github.com/openmapapp/websocket. This allows new posts to automatically be pushed to users without needing to refresh.
+
+5. Optional: Run TileServer-GL (using Docker per their [github](https://github.com/maptiler/tileserver-gl) is easiest on Windows/Linux, though gives me some trouble on MacOS) using free vector tiles of your area from [maptiler](https://data.maptiler.com/downloads/north-america/). Alternatively, use maptiler's existing API which you can register for online for free (at least within their data usage limits), though this reduces the control over your own data. Right now, the default is the maptiler API; you just set it in your .env file and it's good to go. If you want to use TileServer-GL, update the MapComponent.tsx file by uncommenting line 99 and commenting out line 100.
+
+6. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Navigate to `http://localhost:3000` — you should be able to register and explore the app if visitor mode is open
+7. Navigate to `http://localhost:3000` — you should be able to register and explore the app if visitor mode is open
 
-If you have any issues, ask the project owner for access to the DB or MapTiler key.
+If you have any issues, let me know!
