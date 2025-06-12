@@ -4,7 +4,7 @@
 
 This app is a collaborative, real-time map platform designed to allow users to submit, confirm, and manage location-based reports. The platform supports features such as role-based access control, live map updates via Socket.IO, user-generated report submissions, voting mechanisms, and customizable map settings for admin users.
 
-The goal is to create a trustworthy system for reporting and confirming data points on a shared map. This could be used for community tracking, sightings, hazard awareness, or crowdsourced alerts.
+The goal is to create a trustworthy system for reporting and confirming data points on a shared map. This could be used for community tracking, sightings, hazard awareness, or crowdsourced alerts. You can find screenshots of the current state of the project at the bottom of this readme.
 
 ---
 
@@ -177,3 +177,23 @@ npm run dev
 7. Navigate to `http://localhost:3000` — you should be able to register and explore the app if visitor mode is open
 
 If you have any issues, let me know!
+
+## Screenshots
+
+Homepage showing the site's main features
+![Homepage with features](./screenshots/MapWithFeatures.png)
+
+How a user submits a report
+![Report submission form](./screenshots/SubmitReport.png)
+
+Access options set by the site admins
+![Access settings panel](./screenshots/AccessSettingsPanel.png)
+
+Admin panel to set report options
+![Report type settings panel](./screenshots/ReportTypesPanel.png)
+
+Panel for admins to create a new report type
+![Create report type form](./screenshots/CreateReportPanel.png)
+
+Admin panel for managing users
+![User settings panel](./screenshots/UserSettingsPanel.png)
