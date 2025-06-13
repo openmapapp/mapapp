@@ -97,7 +97,7 @@ const MapComponent = ({
       maxBounds={maxBounds}
       style={{ width: "100%", height: "100%" }}
       //mapStyle={"http://127.0.0.1:8080/styles/basic-preview/style.json"}
-      mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${NEXT_PUBLIC_MAPTILER_KEY}`}
+      mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`}
       touchZoomRotate={true}
       dragRotate={false}
       attributionControl={false}

@@ -174,6 +174,8 @@ DATABASE_URL="postgresql://user:password@localhost:5432/database?schema=public"
 npm run dev
 ```
 
+I tend to start the socket.io server first, then the MapApp server, though I don't think order really matters as long as both are up.
+
 7. Navigate to `http://localhost:3000` — you should be able to register and explore the app if visitor mode is open
 
 If you have any issues, let me know!
@@ -194,6 +196,9 @@ Admin panel to set report options
 
 Panel for admins to create a new report type
 ![Create report type form](./screenshots/CreateReportPanel.png)
+
+Admin panel for changing map defaults
+![Panel for admins to set map defaults](./screenshots/MapSettingsPanel.png)
 
 Admin panel for managing users
 ![User settings panel](./screenshots/UserSettingsPanel.png)
