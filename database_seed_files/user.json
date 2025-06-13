@@ -1,0 +1,13 @@
+[
+	{
+		"id": "M9onpvKiclxTs52o3hoLIbV0o72lA8QL",
+		"name": "Example",
+		"email": "test@test.com",
+		"emailVerified": false,
+		"role": "admin",
+		"createdAt": "2025-06-08 20:24:17.934",
+		"updatedAt": "2025-06-08 20:24:17.934",
+		"username": "example",
+		"displayUsername": "example"
+	}
+]

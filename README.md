@@ -149,7 +149,7 @@ npm install
 2. Set up your `.env` file
 
 ```bash
-BETTER_AUTH_SECRET= #Create a secret key for this app
+BETTER_AUTH_SECRET= #Create a secret 32-character key for this app
 BETTER_AUTH_URL=http://localhost:3000 #Base URL of your app
 DB_HOST=localhost
 #DB_USER=<!--replace with your database user name-->
@@ -162,7 +162,7 @@ NEXT_PUBLIC_MAPTILER_KEY=
 DATABASE_URL="postgresql://user:password@localhost:5432/database?schema=public"
 ```
 
-3. Seed PostgreSQL database: seed file coming shortly!
+3. Make the PostgreSQL database: after you've added your databse url to the .env file, navigate to your MapApp folder in terminal and run `npx prisma db push` to create the relevant tables/fields. The only table that needs data pre-populated for the website to work is GlobalSettings, however things run more smoothly if user, account, and ReportType are pre-populated too. You can find json files with starter data in them in the folder database_seed_files. I've been using Postico2 because I prefer having a GUI, and it makes it easy to import json files. If you use this data, the default registered user login is "test@test.com" with the password "thisisatest". If you want to start from scratch, you can register a user once the site is up, and then change them to an admin directly in your postgresql server to have a starter admin.
 
 4. Run websocket server, essentially plug-and-play here: https://github.com/openmapapp/websocket. This allows new posts to automatically be pushed to users without needing to refresh.
 
