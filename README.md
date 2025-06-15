@@ -72,19 +72,6 @@ Invite-based registration is supported and validated before calling the BetterAu
 
 ---
 
-## 🌐 Environment Variables
-
-Ensure the following `.env` variables are set:
-
-```
-BETTER_AUTH_SECRET=...              # Randomly generated secret key
-BETTER_AUTH_URL=...                 # Base URL of app
-DATABASE_URL=postgresql://...       # Your Postgres connection
-NEXT_PUBLIC_MAPTILER_KEY=...        # MapTiler API Key
-```
-
----
-
 ## 🔄 Live Features
 
 - **Map updates in real-time** with Socket.IO
