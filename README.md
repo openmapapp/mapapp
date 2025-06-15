@@ -133,7 +133,7 @@ To get started:
 npm install
 ```
 
-2. Set up your `.env` file
+2. Set up your `.env` file. DB information is required twice, first for BetterAuth to access, second (at the bottom) for prisma.
 
 ```bash
 BETTER_AUTH_SECRET= #Create a secret 32-character key for this app
