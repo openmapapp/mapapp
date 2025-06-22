@@ -223,7 +223,7 @@ export default function ReportTypeSettings({
                       <TableCell>
                         <Image
                           src={
-                            reportType.iconUrl ||
+                            reportType.iconUrl?.trim() ||
                             "/uploads/icons/default-marker.png"
                           }
                           alt={reportType.name}
