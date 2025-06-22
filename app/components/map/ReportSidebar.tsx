@@ -21,9 +21,8 @@ export default function ReportSidebar({
   setHoveredReportId,
 }: ReportSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { reports, timeRange } = useData();
-  const { current: map } = useMap();
   const { reports, timeRange, reportTypes } = useData();
+  const { current: map } = useMap();
 
   // Sort reports by createdAt in reverse chronological order
   const sortedReports = [...(reports || [])].sort((a, b) => {
