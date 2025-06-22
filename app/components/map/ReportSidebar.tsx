@@ -7,35 +7,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, formatDistanceToNow } from "date-fns";
-
-// Import marker icons
-import officer from "@/public/officer.png";
-import car from "@/public/car.png";
-import roadblock from "@/public/roadblock.png";
-import ice from "@/public/raid.png";
-import caution from "@/public/caution.png";
-import smoke from "@/public/smoke.png";
-import marker from "@/public/marker.png";
-
-// Map report types to icons
-const reportTypeIcons: Record<number, any> = {
-  1: officer,
-  2: car,
-  3: roadblock,
-  4: ice,
-  5: caution,
-  6: smoke,
-};
-
-// Map report type IDs to readable names
-const reportTypeNames: Record<number, string> = {
-  1: "Officer",
-  2: "Police Car",
-  3: "Roadblock",
-  4: "ICE",
-  5: "Caution",
-  6: "Smoke/Fire",
-};
+import marker from "@/public/uploads/icons/default-marker.png";
 
 interface ReportSidebarProps {
   setSelectedReport: (report: any) => void;
@@ -51,6 +23,7 @@ export default function ReportSidebar({
   const [isOpen, setIsOpen] = useState(false);
   const { reports, timeRange } = useData();
   const { current: map } = useMap();
+  const { reports, timeRange, reportTypes } = useData();
 
   // Sort reports by createdAt in reverse chronological order
   const sortedReports = [...(reports || [])].sort((a, b) => {
@@ -155,9 +128,15 @@ export default function ReportSidebar({
               <div className="space-y-2">
                 {sortedReports.map((report) => {
                   const iconSrc =
-                    reportTypeIcons[report.reportTypeId] || marker;
+                    report.reportType?.iconUrl ||
+                    reportTypes.find((t) => t.id === report.reportTypeId)
+                      ?.iconUrl ||
+                    marker;
                   const typeName =
-                    reportTypeNames[report.reportTypeId] || "Unknown";
+                    report.reportType?.name ||
+                    reportTypes.find((t) => t.id === report.reportTypeId)
+                      ?.name ||
+                    "Unknown";
                   const description = formatDescription(report.description);
 
                   // Determine status badges

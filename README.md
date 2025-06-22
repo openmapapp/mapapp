@@ -127,43 +127,111 @@ Invite-based registration is supported and validated before calling the BetterAu
 
 To get started:
 
-1. Clone the repo and install dependencies:
+### 1. Clone the repo and install dependencies:
 
 ```bash
+git clone https://github.com/openmapapp/mapapp.git
+cd mapapp
 npm install
 ```
 
-2. Set up your `.env` file. DB information is required twice, first for BetterAuth to access, second (at the bottom) for prisma.
+### 2. Set up your `.env` file. DB information is required twice, first for BetterAuth to access, second (at the bottom) for prisma.
 
 ```bash
+# BetterAuth config
 BETTER_AUTH_SECRET= #Create a secret 32-character key for this app
 BETTER_AUTH_URL=http://localhost:3000 #Base URL of your app
+
+# PostgreSQL connection info (used by BetterAuth)
 DB_HOST=localhost
-#DB_USER=<!--replace with your database user name-->
-#DB_PWD=<!--replace with your database password-->
-DB_NAME=
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=postgres
+DB_PORT=5432
 
 # If using Mapbox API, set Mapbox API key here
 NEXT_PUBLIC_MAPTILER_KEY=
 
-DATABASE_URL="postgresql://user:password@localhost:5432/database?schema=public"
+# Prisma Database info
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 ```
 
-3. Make the PostgreSQL database: after you've added your databse url to the .env file, navigate to your MapApp folder in terminal and run `npx prisma db push` to create the relevant tables/fields. The only table that needs data pre-populated for the website to work is GlobalSettings, however things run more smoothly if user, account, and ReportType are pre-populated too. You can find json files with starter data in them in the folder database_seed_files. I've been using Postico2 because I prefer having a GUI, and it makes it easy to import json files. If you use this data, the default registered user login is "test@test.com" with the password "thisisatest". If you want to start from scratch, you can register a user once the site is up, and then change them to an admin directly in your postgresql server to have a starter admin.
+You can change these creds to anything you want, but the Podman setup below uses them, so update accordingly.
 
-4. Run websocket server, essentially plug-and-play here: https://github.com/openmapapp/websocket. This allows new posts to automatically be pushed to users without needing to refresh.
+### 3. Set Up PostgreSQL with Podman and Import Pre-Populated Database
 
-5. Optional: Run TileServer-GL (using Docker per their [github](https://github.com/maptiler/tileserver-gl) is easiest on Windows/Linux, though gives me some trouble on MacOS) using free vector tiles of your area from [maptiler](https://data.maptiler.com/downloads/north-america/). Alternatively, use maptiler's existing API which you can register for online for free (at least within their data usage limits), though this reduces the control over your own data. Right now, the default is the maptiler API; you just set it in your .env file and it's good to go. If you want to use TileServer-GL, update the MapComponent.tsx file by uncommenting line 99 and commenting out line 100.
+Instead of seeding manually, this project uses a complete .sql database snapshot. To load it:
 
-6. Run the development server:
+#### Step 3.1: Make sure Podman is installed
+
+Install from: https://podman.io/getting-started/installation
+
+#### Step 3.2: Start PostgreSQL in Podman
+
+```bash
+podman run -d \
+  --name postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=postgres \
+  -p 5432:5432 \
+  -v pgdata:/var/lib/postgresql/data \
+  docker.io/library/postgres:latest
+```
+
+#### Step 3.3 : Import the Database Dump
+
+Find the full_db.sql file in the project root:
+
+```bash
+  podman cp full_dump.sql postgres:/full_dump.sql
+  podman exec -it postgres bash
+  psql -U postgres -d postgres -f /full_dump.sql
+  exit
+```
+
+This creates all tables and inserts data including GlobalSettings, User, Account, and ReportType
+
+#### Step 3.4: Confirm Import (Optional)
+
+```bash
+  podman exec -it postgres psql -U postgres -d postgres -c '\dt'
+```
+
+### 4. Run websocket server (Optional, but Recommended)
+
+This allows real-time updates of new posts without refreshing.
+
+Clone and run this project:
+https://github.com/openmapapp/websocket.
+You can start before or after running MapApp - both work.
+
+### 5. Optional: Run TileServer-GL
+
+#### Option A: Use Maptiler's Free API
+
+Simply set NEXT_PUBLIC_MAPTILER_KEY in your .env and that's it.
+
+#### Option B: Run your Own Tile Server
+
+Follow [TileServer-GL's instructions](https://github.com/maptiler/tileserver-gl) using Docker. Recommend for Linux/Windows; a bit finicky on macOS with apple silicon. Then update the MapComponent.tsx file by uncommenting line 99 and commenting out line 100. If you go this route, you can use free vector tiles of your area from [maptiler](https://data.maptiler.com/downloads/north-america/).
+
+### 6. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-I tend to start the socket.io server first, then the MapApp server, though I don't think order really matters as long as both are up.
+Navigate to `http://localhost:3000`
 
-7. Navigate to `http://localhost:3000` — you should be able to register and explore the app if visitor mode is open
+### 7. Default Login (Optional)
+
+If you used the provided SQL dump, a default test user is already created:
+
+```makefile
+Email: test@test.com
+Password: thisisatest
+```
 
 If you have any issues, let me know!
 
