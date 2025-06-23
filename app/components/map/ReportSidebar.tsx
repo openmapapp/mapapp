@@ -117,7 +117,7 @@ export default function ReportSidebar({
           </div>
 
           {/* Report list */}
-          {/* <div className="flex-1 overflow-y-auto p-2">
+          <div className="flex-1 overflow-y-auto p-2">
             {sortedReports.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <AlertCircle className="mb-2" />
@@ -154,11 +154,11 @@ export default function ReportSidebar({
                       onMouseEnter={() => setHoveredReportId(report.id)}
                       onMouseLeave={() => setHoveredReportId(null)}
                       onClick={() => handleReportClick(report)}
-                    > */}
-          {/* Report content as before */}
-          {/* <div className="flex gap-3"> */}
-          {/* Report icon */}
-          {/* <div className="mt-0.5">
+                    >
+                      {/* Report content as before */}
+                      <div className="flex gap-3">
+                        {/* Report icon */}
+                        <div className="mt-0.5">
                           <Image
                             src={iconSrc}
                             alt={typeName}
@@ -166,18 +166,18 @@ export default function ReportSidebar({
                             height={24}
                             className={isDisputed ? "opacity-60" : ""}
                           />
-                        </div> */}
+                        </div>
 
-          {/* Report content */}
-          {/* <div className="flex-1 min-w-0"> */}
-          {/* Title line with badges */}
-          {/* <div className="flex items-center gap-2 mb-1">
+                        {/* Report content */}
+                        <div className="flex-1 min-w-0">
+                          {/* Title line with badges */}
+                          <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium truncate">
                               {typeName}
-                            </span> */}
+                            </span>
 
-          {/* Status badges */}
-          {/* <div className="flex gap-1">
+                            {/* Status badges */}
+                            <div className="flex gap-1">
                               {isVerified && (
                                 <span className="px-1.5 py-0.5 rounded text-[10px] bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                                   Verified
@@ -194,15 +194,15 @@ export default function ReportSidebar({
                                 </span>
                               )}
                             </div>
-                          </div> */}
+                          </div>
 
-          {/* Description */}
-          {/* <p className="text-sm text-muted-foreground truncate">
+                          {/* Description */}
+                          <p className="text-sm text-muted-foreground truncate">
                             {description}
-                          </p> */}
+                          </p>
 
-          {/* Time */}
-          {/* <div
+                          {/* Time */}
+                          <div
                             className="text-xs text-muted-foreground mt-1"
                             title={getTimeAgo(report.createdAt)}
                           >
@@ -213,9 +213,9 @@ export default function ReportSidebar({
                     </div>
                   );
                 })}
-              </div> 
-            )} 
-          </div> */}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
